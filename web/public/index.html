@@ -344,7 +344,7 @@
 		</div>
 		<p>Message that Discord with your Minecraft name. After you get added, open the Cape card in Eisenmann and crop a photo or paste a PNG. Other Eisenmann users see it when they join a world.</p>
 	</section>
-	<p class="foot">voidmark.cloud</p>
+	<p class="foot">eisenmann.lol</p>
 
 	<script>
 		document.getElementById("copy").onclick = function () {
@@ -362,14 +362,14 @@
 			var link = document.getElementById("mod-download");
 			var mirrors = [
 				{ url: "/api/mod", repo: "" },
-				{ url: "https://raw.githubusercontent.com/camberX/eisenmann/main/web/public/mod/latest.json", repo: "camberX/eisenmann" },
-				{ url: "https://cdn.jsdelivr.net/gh/camberX/eisenmann@main/web/public/mod/latest.json", repo: "camberX/eisenmann" },
+				{ url: "https://raw.githubusercontent.com/camberX/Eisenmann/main/web/public/mod/latest.json", repo: "camberX/Eisenmann" },
+				{ url: "https://cdn.jsdelivr.net/gh/camberX/Eisenmann@main/web/public/mod/latest.json", repo: "camberX/Eisenmann" },
 				{ url: "https://raw.githubusercontent.com/camberX/voidmark/main/web/public/mod/latest.json", repo: "camberX/voidmark" },
 				{ url: "https://cdn.jsdelivr.net/gh/camberX/voidmark@main/web/public/mod/latest.json", repo: "camberX/voidmark" }
 			];
 			function fileUrl(data) {
 				if (data.url && data.url.charAt(0) === "/") return data.url;
-				return "https://raw.githubusercontent.com/" + (data.repo || "camberX/eisenmann") + "/main/web/public/mod/" + (data.file || ("eisenmann-" + data.version + ".jar"));
+				return "https://raw.githubusercontent.com/" + (data.repo || "camberX/Eisenmann") + "/main/web/public/mod/" + (data.file || ("eisenmann-" + data.version + ".jar"));
 			}
 			function apply(data) {
 				ver.textContent = "v" + data.version;
