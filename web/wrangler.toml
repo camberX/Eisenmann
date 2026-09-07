@@ -8,8 +8,8 @@ binding = "ASSETS"
 run_worker_first = true
 
 [vars]
-TITLE = "VOIDMARK Capes"
-MOD_GITHUB = "camberX/voidmark"
+TITLE = "EISENMANN Capes"
+MOD_GITHUB = "camberX/eisenmann"
 MOD_GITHUB_BRANCH = "main"
 MOD_GITHUB_PATH = "web/public/mod"
 

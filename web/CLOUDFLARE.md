@@ -1,6 +1,6 @@
 # Host the cape shop on Cloudflare (free)
 
-This puts the UUID list and cape files on Cloudflare Workers + R2. You are not running a VPS. The free tier is enough for Voidmark: 10 GB of PNGs, no bandwidth bill.
+This puts the UUID list and cape files on Cloudflare Workers + R2. You are not running a VPS. The free tier is enough for Eisenmann: 10 GB of PNGs, no bandwidth bill.
 
 **R2 asks for a card even on the free plan.** That is verification, not a charge. Stay under the free limits and the bill is $0. After you add a card, set a spending cap (step 9 in the CLI path).
 
@@ -12,7 +12,7 @@ Origin has no Download ZIP. Do not type your Google password into Git.
 
 1. Cloudflare → **Workers & Pages** (Compute) → **Create** → start from a Hello World Worker.
 2. Name it `voidmark-capes`. Deploy once so it exists.
-3. **Edit code**. Delete the sample. On [the Voidmark codebase](https://github.com/camberX/voidmark) open `web/worker.js`, copy the whole file, paste it into the Worker editor. **Deploy**.
+3. **Edit code**. Delete the sample. On [the Eisenmann codebase](https://github.com/camberX/eisenmann) open `web/worker.js`, copy the whole file, paste it into the Worker editor. **Deploy**.
 4. Worker **Settings** → **Bindings** → **R2** → Add. Variable name must be `CAPES`. Bucket: `voidmark-capes`. Save.
 5. Worker **Settings** → **Variables and Secrets**:
    - `ADMIN` → Encrypt / Secret. Paste a long random string and save it in a password manager.
@@ -85,7 +85,7 @@ Open it. You should see the cape landing page (message @evilkitten911 on Discord
 
 If deploy fails with a bucket error, the bucket name in the dashboard does not match `voidmark-capes`. Rename it or change `bucket_name` in `wrangler.toml` to match.
 
-## 6. Point Voidmark at that URL
+## 6. Point Eisenmann at that URL
 
 The jar is hardcoded to `https://voidmark.cloud`. There is no `capeServerUrl` in `.minecraft/config/voidmark.json`. Launch drops that key if an older config still has it.
 
@@ -98,7 +98,7 @@ Attach `voidmark.cloud` to the Worker (Settings → Domains & Routes). The `work
 3. Type their username or UUID and click **Add**, or use Bulk add. You should see their current name, skin, and cape.
 4. Click a player to change cape, head tag, note, bypass, or reset the 24 hour cooldown. **Dewhitelist** drops them.
 
-Capes only show for Voidmark users.
+Capes only show for Eisenmann users.
 
 ## 8. Check it worked
 
@@ -112,7 +112,7 @@ You should see a title and the Discord handle. After they set a cape in-game:
 curl https://voidmark-capes.YOURNAME.workers.dev/api/cape/THEIR-UUID
 ```
 
-should return `"has":true` and a hash. Changing the cape in the Voidmark menu overwrites that file; other clients pick it up the next time they join a world.
+should return `"has":true` and a hash. Changing the cape in the Eisenmann menu overwrites that file; other clients pick it up the next time they join a world.
 
 ## 9. Cap the bill (do this once)
 
@@ -129,7 +129,7 @@ The jar always uses `https://voidmark.cloud`, so that hostname must be on the Wo
 
 ## Updating later
 
-The shop download does **not** need a Worker deploy for each new jar. `./gradlew build` writes `web/public/mod/latest.json` and the jar; `git push` to [camberX/voidmark](https://github.com/camberX/voidmark) is enough. The Worker fetches that on `/download` and `/api/mod`. It always tries `camberX/voidmark` first, even if the dashboard `MOD_GITHUB` var is missing or still points at an old repo.
+The shop download does **not** need a Worker deploy for each new jar. `./gradlew build` writes `web/public/mod/latest.json` and the jar; `git push` to [camberX/eisenmann](https://github.com/camberX/eisenmann) is enough. The Worker fetches that on `/download` and `/api/mod`. It tries `camberX/eisenmann` first and keeps the former repository URL as a migration fallback.
 
 If the landing page still says **Build not published yet**, the live Worker does not have this fetch code. Paste the current `web/worker.js` into the Worker editor and Deploy, or run:
 

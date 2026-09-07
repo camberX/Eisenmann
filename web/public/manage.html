@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>VOIDMARK Desk</title>
+	<title>EISENMANN Desk</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@500;700;800&display=swap" rel="stylesheet">
 	<style>
@@ -921,7 +921,7 @@
 			api("PUT", uuid.value.trim()).then(function (data) {
 				draw(data.players || []);
 				uuid.value = "";
-				setStatus(true, "Whitelisted. They can set a cape in Voidmark.");
+				setStatus(true, "Whitelisted. They can set a cape in Eisenmann.");
 			}).catch(function (error) { setStatus(false, error.message); });
 		};
 		uuid.addEventListener("keydown", function (event) { if (event.key === "Enter") document.getElementById("add").click(); });
@@ -932,7 +932,7 @@
 			const blob = new Blob([JSON.stringify(cache, null, 2)], { type: "application/json" });
 			const a = document.createElement("a");
 			a.href = URL.createObjectURL(blob);
-			a.download = "voidmark-whitelist.json";
+			a.download = "eisenmann-whitelist.json";
 			a.click();
 		};
 		document.getElementById("bulkadd").onclick = function () {
@@ -976,11 +976,11 @@
 		document.getElementById("d-file").onchange = function () {
 			const file = document.getElementById("d-file").files[0];
 			if (!file || !selected) return;
-			if (!window.VoidmarkCapeCrop) {
+			if (!window.EisenmannCapeCrop) {
 				uploadCapeBlob(file).catch(function (error) { setStatus(false, error.message); }).finally(function () { document.getElementById("d-file").value = ""; });
 				return;
 			}
-			VoidmarkCapeCrop.open(file, function (png) {
+			EisenmannCapeCrop.open(file, function (png) {
 				uploadCapeBlob(png).catch(function (error) { setStatus(false, error.message); }).finally(function () { document.getElementById("d-file").value = ""; });
 			}, function () { document.getElementById("d-file").value = ""; });
 		};
@@ -999,9 +999,9 @@
 				}
 				return response.blob();
 			}).then(function (blob) {
-				if (!window.VoidmarkCapeCrop) return uploadCapeBlob(blob);
+				if (!window.EisenmannCapeCrop) return uploadCapeBlob(blob);
 				return new Promise(function (resolve, reject) {
-					VoidmarkCapeCrop.open(blob, function (png) { uploadCapeBlob(png).then(resolve).catch(reject); }, function () { resolve(); });
+					EisenmannCapeCrop.open(blob, function (png) { uploadCapeBlob(png).then(resolve).catch(reject); }, function () { resolve(); });
 				});
 			}).catch(function (error) { setStatus(false, error.message); });
 		};
