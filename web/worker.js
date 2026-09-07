@@ -1593,7 +1593,7 @@ const STORE_HTML = `<!DOCTYPE html>
 		</div>
 		<p>Message that Discord with your Minecraft name. After you get added, open the Cape card in Eisenmann and crop a photo or paste a PNG. Other Eisenmann users see it when they join a world.</p>
 	</section>
-	<p class="foot">voidmark.cloud</p>
+	<p class="foot">eisenmann.lol</p>
 
 	<script>
 		document.getElementById("copy").onclick = function () {

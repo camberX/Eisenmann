@@ -18,8 +18,8 @@ Origin has no Download ZIP. Do not type your Google password into Git.
    - `ADMIN` → Encrypt / Secret. Paste a long random string and save it in a password manager.
    - `SPOTIFY_CLIENT_ID` → Text. Public Spotify app client ID. Redirect URI on that app must be `http://127.0.0.1:43821/callback`. The shop exposes it at `/api/spotify`. The mod also reads `web/public/spotify.json` from GitHub, so a Worker deploy is not required for friends to log in.
 6. Deploy again if it asks.
-7. Open the Worker URL (`https://voidmark.cloud` or the `workers.dev` URL). The public shop is `/`, with a download of the latest jar at `/download`. Admin login is `/admin`. After the key is accepted, the Worker sets an HttpOnly cookie and then serves the cape desk at `/manage`. `/manage` is not sent at all without that cookie, and every desk API (list, whitelist, tags, capes, bans) also requires that cookie plus the admin key — hiding the page in the browser is not the lock. That desk is players, bulk add, notes, cooldown reset, cape upload, and fake ban.
-8. The shipped mod always uses `https://voidmark.cloud`. Attach that custom domain to this Worker (Workers & Pages → `voidmark-capes` → Settings → Domains & Routes). Restart Minecraft after a domain change.
+7. Open the Worker URL (`https://eisenmann.lol` or the `workers.dev` URL). The public shop is `/`, with a download of the latest jar at `/download`. Admin login is `/admin`. After the key is accepted, the Worker sets an HttpOnly cookie and then serves the cape desk at `/manage`. `/manage` is not sent at all without that cookie, and every desk API (list, whitelist, tags, capes, bans) also requires that cookie plus the admin key — hiding the page in the browser is not the lock. That desk is players, bulk add, notes, cooldown reset, cape upload, and fake ban.
+8. The shipped mod always uses `https://eisenmann.lol`. Attach that custom domain to this Worker (Workers & Pages → `voidmark-capes` → Settings → Domains & Routes). Restart Minecraft after a domain change.
 
 ## 0. What you need (CLI path)
 
@@ -87,14 +87,14 @@ If deploy fails with a bucket error, the bucket name in the dashboard does not m
 
 ## 6. Point Eisenmann at that URL
 
-The jar is hardcoded to `https://voidmark.cloud`. There is no `capeServerUrl` in `.minecraft/config/voidmark.json`. Launch drops that key if an older config still has it.
+The jar is hardcoded to `https://eisenmann.lol`. There is no `capeServerUrl` in `.minecraft/config/voidmark.json`. Launch drops that key if an older config still has it.
 
-Attach `voidmark.cloud` to the Worker (Settings → Domains & Routes). The `workers.dev` URL still works in a browser for the admin list if you want it.
+Attach `eisenmann.lol` to the Worker (Settings → Domains & Routes). The `workers.dev` URL still works in a browser for the admin list if you want it.
 
 ## 7. After someone messages on Discord
 
 1. They message **@evilkitten911** with their Minecraft name.
-2. Open `https://voidmark.cloud/admin` (or your Worker `/admin`), enter the admin key, and you land on the cape desk. Visiting `/manage` without logging in redirects to the login page and does not include the desk HTML.
+2. Open `https://eisenmann.lol/admin` (or your Worker `/admin`), enter the admin key, and you land on the cape desk. Visiting `/manage` without logging in redirects to the login page and does not include the desk HTML.
 3. Type their username or UUID and click **Add**, or use Bulk add. You should see their current name, skin, and cape.
 4. Click a player to change cape, head tag, note, bypass, or reset the 24 hour cooldown. **Dewhitelist** drops them.
 
@@ -122,10 +122,10 @@ should return `"has":true` and a hash. Changing the cape in the Eisenmann menu o
 
 ## Optional: custom domain
 
-The jar always uses `https://voidmark.cloud`, so that hostname must be on the Worker:
+The jar always uses `https://eisenmann.lol`, so that hostname must be on the Worker:
 
 1. Workers & Pages → `voidmark-capes` → **Settings** → **Domains & Routes** → **Add**.
-2. Add `voidmark.cloud`.
+2. Add `eisenmann.lol`.
 
 ## Updating later
 
