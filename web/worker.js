@@ -1610,15 +1610,15 @@ const STORE_HTML = `<!DOCTYPE html>
 			var menuVer = document.getElementById("menu-ver");
 			var link = document.getElementById("mod-download");
 			var mirrors = [
-				"/api/mod",
-				"https://raw.githubusercontent.com/camberX/eisenmann/main/web/public/mod/latest.json",
-				"https://cdn.jsdelivr.net/gh/camberX/eisenmann@main/web/public/mod/latest.json",
-				"https://raw.githubusercontent.com/camberX/voidmark/main/web/public/mod/latest.json",
-				"https://cdn.jsdelivr.net/gh/camberX/voidmark@main/web/public/mod/latest.json"
+				{ url: "/api/mod", repo: "" },
+				{ url: "https://raw.githubusercontent.com/camberX/eisenmann/main/web/public/mod/latest.json", repo: "camberX/eisenmann" },
+				{ url: "https://cdn.jsdelivr.net/gh/camberX/eisenmann@main/web/public/mod/latest.json", repo: "camberX/eisenmann" },
+				{ url: "https://raw.githubusercontent.com/camberX/voidmark/main/web/public/mod/latest.json", repo: "camberX/voidmark" },
+				{ url: "https://cdn.jsdelivr.net/gh/camberX/voidmark@main/web/public/mod/latest.json", repo: "camberX/voidmark" }
 			];
 			function fileUrl(data) {
 				if (data.url && data.url.charAt(0) === "/") return data.url;
-				return "https://raw.githubusercontent.com/camberX/eisenmann/main/web/public/mod/" + (data.file || ("eisenmann-" + data.version + ".jar"));
+				return "https://raw.githubusercontent.com/" + (data.repo || "camberX/eisenmann") + "/main/web/public/mod/" + (data.file || ("eisenmann-" + data.version + ".jar"));
 			}
 			function apply(data) {
 				ver.textContent = "v" + data.version;
@@ -1629,8 +1629,11 @@ const STORE_HTML = `<!DOCTYPE html>
 			}
 			function next(i) {
 				if (i >= mirrors.length) return;
-				fetch(mirrors[i], { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
-					if (data && data.version) apply(data);
+				fetch(mirrors[i].url, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
+					if (data && data.version) {
+						if (!data.repo && mirrors[i].repo) data.repo = mirrors[i].repo;
+						apply(data);
+					}
 					else next(i + 1);
 				}).catch(function () { next(i + 1); });
 			}
