@@ -12,7 +12,7 @@ Origin has no Download ZIP. Do not type your Google password into Git.
 
 1. Cloudflare → **Workers & Pages** (Compute) → **Create** → start from a Hello World Worker.
 2. Name it `voidmark-capes`. Deploy once so it exists.
-3. **Edit code**. Delete the sample. On [the Eisenmann codebase](https://github.com/camberX/eisenmann) open `web/worker.js`, copy the whole file, paste it into the Worker editor. **Deploy**.
+3. **Edit code**. Delete the sample. On [the Eisenmann codebase](https://github.com/camberX/Eisenmann) open `web/worker.js`, copy the whole file, paste it into the Worker editor. **Deploy**.
 4. Worker **Settings** → **Bindings** → **R2** → Add. Variable name must be `CAPES`. Bucket: `voidmark-capes`. Save.
 5. Worker **Settings** → **Variables and Secrets**:
    - `ADMIN` → Encrypt / Secret. Paste a long random string and save it in a password manager.
@@ -129,7 +129,7 @@ The jar always uses `https://eisenmann.lol`, so that hostname must be on the Wor
 
 ## Updating later
 
-The shop download does **not** need a Worker deploy for each new jar. `./gradlew build` writes `web/public/mod/latest.json` and the jar; `git push` to [camberX/eisenmann](https://github.com/camberX/eisenmann) is enough. The Worker fetches that on `/download` and `/api/mod`. It tries `camberX/eisenmann` first and keeps the former repository URL as a migration fallback.
+The shop download does **not** need a Worker deploy for each new jar. `./gradlew build` writes `web/public/mod/latest.json` and the jar; `git push` to [camberX/Eisenmann](https://github.com/camberX/Eisenmann) is enough. The Worker fetches that on `/download` and `/api/mod`. It tries `camberX/Eisenmann` first and keeps the former repository URL as a migration fallback.
 
 If the landing page still says **Build not published yet**, the live Worker does not have this fetch code. Paste the current `web/worker.js` into the Worker editor and Deploy, or run:
 
