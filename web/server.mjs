@@ -9,8 +9,8 @@ const ROOT = fileURLToPath(new URL(".", import.meta.url));
 const PUBLIC = join(ROOT, "public");
 const DATA = join(ROOT, "data");
 const CAPES = join(DATA, "capes");
-const PORT = Number(process.env.VOIDMARK_CAPE_PORT || 43150);
-const ADMIN = process.env.VOIDMARK_CAPE_ADMIN || "change-me";
+const PORT = Number(process.env.EISENMANN_CAPE_PORT || 43150);
+const ADMIN = process.env.EISENMANN_CAPE_ADMIN || "change-me";
 const MAX_BYTES = 2 * 1024 * 1024;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 
@@ -26,7 +26,7 @@ const store = {
 	config: await loadJson(join(DATA, "config.json"), {
 		paypal: "your-paypal@email.com",
 		price: "$1",
-		title: "VOIDMARK Capes",
+		title: "EISENMANN Capes",
 		blurb: ""
 	}),
 	notes: await loadJson(join(DATA, "notes.json"), {}),
@@ -51,7 +51,7 @@ if (!store.bans || typeof store.bans !== "object" || Array.isArray(store.bans)) 
 	store.bans = {};
 }
 if (!store.config || typeof store.config !== "object" || Array.isArray(store.config)) {
-	store.config = { paypal: "your-paypal@email.com", price: "$1", title: "VOIDMARK Capes", blurb: "" };
+	store.config = { paypal: "your-paypal@email.com", price: "$1", title: "EISENMANN Capes", blurb: "" };
 }
 
 const MIME = {
@@ -98,12 +98,12 @@ async function route(req, res) {
 		json(res, 200, {
 			version: String(meta.version),
 			minecraft: String(meta.minecraft || "26.1.2"),
-			file: String(meta.file || ("voidmark-" + meta.version + ".jar")),
+			file: String(meta.file || ("eisenmann-" + meta.version + ".jar")),
 			url: "/download"
 		});
 		return;
 	}
-	if (req.method === "GET" && (path === "/download" || path === "/voidmark.jar")) {
+	if (req.method === "GET" && (path === "/download" || path === "/eisenmann.jar" || path === "/voidmark.jar")) {
 		serveModJar(res);
 		return;
 	}
@@ -274,7 +274,7 @@ async function handleImport(req, res) {
 	}
 	try {
 		const response = await fetch(url, {
-			headers: { "User-Agent": "Voidmark" },
+			headers: { "User-Agent": "Eisenmann" },
 			signal: AbortSignal.timeout(10000)
 		});
 		if (!response.ok) {
@@ -589,7 +589,7 @@ async function readCapeBytes(req, adminOk) {
 		}
 		try {
 			const response = await fetch(url, {
-				headers: { "User-Agent": "Voidmark" },
+				headers: { "User-Agent": "Eisenmann" },
 				signal: AbortSignal.timeout(10000)
 			});
 			if (!response.ok) {
@@ -778,7 +778,7 @@ async function firstString(attempts) {
 async function fetchJson(url) {
 	try {
 		const response = await fetch(url, {
-			headers: { "User-Agent": "Voidmark" },
+			headers: { "User-Agent": "Eisenmann" },
 			signal: AbortSignal.timeout(5000)
 		});
 		if (!response.ok) {
@@ -805,7 +805,7 @@ function noteFor(uuid) {
 function shopConfig() {
 	const stored = store.config && typeof store.config === "object" ? store.config : {};
 	return {
-		title: stored.title || "VOIDMARK Capes",
+		title: stored.title || "EISENMANN Capes",
 		discord: "@evilkitten911",
 		blurb: stored.blurb || ""
 	};
@@ -845,7 +845,7 @@ function sanitizePrice(value) {
 
 function sanitizeTitle(value) {
 	const title = String(value || "").replace(/\s+/g, " ").trim().slice(0, 48);
-	return title || "VOIDMARK Capes";
+	return title || "EISENMANN Capes";
 }
 
 function sanitizeBlurb(value) {
@@ -901,13 +901,15 @@ function loadModMeta() {
 }
 
 function serveModJar(res) {
-	const file = join(PUBLIC, "mod", "voidmark.jar");
+	const current = join(PUBLIC, "mod", "eisenmann.jar");
+	const legacy = join(PUBLIC, "mod", "voidmark.jar");
+	const file = existsSync(current) ? current : legacy;
 	if (!existsSync(file)) {
 		json(res, 404, { error: "Mod build is not published yet" });
 		return;
 	}
 	const meta = loadModMeta() || {};
-	const name = String(meta.file || "voidmark.jar").replace(/"/g, "");
+	const name = String(meta.file || "eisenmann.jar").replace(/"/g, "");
 	const size = statSync(file).size;
 	res.writeHead(200, {
 		...cors(),
@@ -1128,5 +1130,5 @@ async function saveJson(path, value) {
 }
 
 server.listen(PORT, "0.0.0.0", () => {
-	console.log(`Voidmark cape shop http://127.0.0.1:${PORT}`);
+	console.log(`Eisenmann cape shop http://127.0.0.1:${PORT}`);
 });

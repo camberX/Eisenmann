@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Voidmark</title>
+	<title>Eisenmann</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@500;700;800&display=swap" rel="stylesheet">
 	<style>
@@ -181,7 +181,7 @@
 <body>
 	<header class="site">
 		<div>
-			<h1>Voidmark</h1>
+			<h1>Eisenmann</h1>
 			<p class="lede">A visuals oriented Hypixel Skyblock mod.</p>
 		</div>
 		<div class="site-actions">
@@ -194,7 +194,7 @@
 		<div class="menu" id="menu">
 			<aside class="side">
 				<div class="nav-pill" id="nav-pill"></div>
-				<div class="brand">VOIDMARK<span id="menu-ver"></span></div>
+				<div class="brand">EISENMANN<span id="menu-ver"></span></div>
 				<div class="tick"></div>
 				<div class="grp">VISUALS</div>
 				<button type="button" class="tab on" data-tab="world"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.9 9h-3.2a15 15 0 0 0-1.4-6 8 8 0 0 1 4.6 6zM12 4c.8 1.3 1.5 3.4 1.8 6H10.2C10.5 7.4 11.2 5.3 12 4zM4.1 13h3.2c.2 2.2.7 4.2 1.4 6A8 8 0 0 1 4.1 13zM8.7 11H5.1A8 8 0 0 1 9.7 5a15 15 0 0 0-1 6zm1.5 2h3.6c-.3 2.6-1 4.7-1.8 6-.8-1.3-1.5-3.4-1.8-6zm5.1 6c.7-1.8 1.2-3.8 1.4-6h3.2a8 8 0 0 1-4.6 6z"/></svg>World</button>
@@ -332,7 +332,7 @@
 			<li><b>Bars</b> Restyled hotbar, health, scoreboard, and the rest of vanilla HUD</li>
 			<li><b>Nodes</b> Ender node ESP, tracers, and a live Hypixel / End status card</li>
 			<li><b>Mining</b> Commission HUD, pickaxe cooldown, titanium ESP</li>
-			<li><b>You</b> Nick, custom capes, head tags — other Voidmark users see them</li>
+			<li><b>You</b> Nick, custom capes, head tags — other Eisenmann users see them</li>
 			<li><b>Menus</b> Title screen and vanilla menus use the same chrome</li>
 		</ul>
 	</section>
@@ -342,7 +342,7 @@
 			<span class="handle">@evilkitten911</span>
 			<button type="button" class="copy" id="copy">Copy</button>
 		</div>
-		<p>Message that Discord with your Minecraft name. After you get added, open the Cape card in Voidmark and crop a photo or paste a PNG. Other Voidmark users see it when they join a world.</p>
+		<p>Message that Discord with your Minecraft name. After you get added, open the Cape card in Eisenmann and crop a photo or paste a PNG. Other Eisenmann users see it when they join a world.</p>
 	</section>
 	<p class="foot">voidmark.cloud</p>
 
@@ -361,25 +361,30 @@
 			var menuVer = document.getElementById("menu-ver");
 			var link = document.getElementById("mod-download");
 			var mirrors = [
-				"/api/mod",
-				"https://raw.githubusercontent.com/camberX/voidmark/main/web/public/mod/latest.json",
-				"https://cdn.jsdelivr.net/gh/camberX/voidmark@main/web/public/mod/latest.json"
+				{ url: "/api/mod", repo: "" },
+				{ url: "https://raw.githubusercontent.com/camberX/eisenmann/main/web/public/mod/latest.json", repo: "camberX/eisenmann" },
+				{ url: "https://cdn.jsdelivr.net/gh/camberX/eisenmann@main/web/public/mod/latest.json", repo: "camberX/eisenmann" },
+				{ url: "https://raw.githubusercontent.com/camberX/voidmark/main/web/public/mod/latest.json", repo: "camberX/voidmark" },
+				{ url: "https://cdn.jsdelivr.net/gh/camberX/voidmark@main/web/public/mod/latest.json", repo: "camberX/voidmark" }
 			];
 			function fileUrl(data) {
 				if (data.url && data.url.charAt(0) === "/") return data.url;
-				return "https://raw.githubusercontent.com/camberX/voidmark/main/web/public/mod/" + (data.file || ("voidmark-" + data.version + ".jar"));
+				return "https://raw.githubusercontent.com/" + (data.repo || "camberX/eisenmann") + "/main/web/public/mod/" + (data.file || ("eisenmann-" + data.version + ".jar"));
 			}
 			function apply(data) {
 				ver.textContent = "v" + data.version;
 				menuVer.textContent = "v" + data.version;
 				link.classList.remove("dead");
-				link.setAttribute("download", data.file || ("voidmark-" + data.version + ".jar"));
+				link.setAttribute("download", data.file || ("eisenmann-" + data.version + ".jar"));
 				link.href = fileUrl(data);
 			}
 			function next(i) {
 				if (i >= mirrors.length) return;
-				fetch(mirrors[i], { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
-					if (data && data.version) apply(data);
+				fetch(mirrors[i].url, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
+					if (data && data.version) {
+						if (!data.repo && mirrors[i].repo) data.repo = mirrors[i].repo;
+						apply(data);
+					}
 					else next(i + 1);
 				}).catch(function () { next(i + 1); });
 			}
