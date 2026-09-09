@@ -1263,14 +1263,14 @@ const STORE_HTML = `<!DOCTYPE html>
 			--text: #f2f4f7;
 			--muted: #8a9aab;
 			--header: #c4ced8;
-			--accent: #2fb5ff;
-			--accent-dim: #1a6fa8;
+			--accent: #e5e7eb;
+			--accent-dim: #4a5564;
 			--pane: #0b0e14;
 			--card: #12151c;
 			--line: #1c2430;
 			--track: #1a222c;
 			--off: #3d4a58;
-			--pill: #1e5f8c;
+			--pill: #4a5564;
 			--warn: #f5c16c;
 			--glass: rgba(255, 255, 255, 0.10);
 			--glass-2: rgba(255, 255, 255, 0.16);
@@ -2200,7 +2200,6 @@ const STORE_HTML = `<!DOCTYPE html>
 		(function loadMod() {
 			var ver = document.getElementById("mod-ver");
 			var menuVer = document.getElementById("menu-ver");
-			var railVer = document.getElementById("rail-ver");
 			var stat = document.getElementById("stat-ver");
 			var links = [document.getElementById("mod-download"), document.getElementById("mod-download-2")];
 			var mirrors = [
@@ -2273,7 +2272,7 @@ const STORE_HTML = `<!DOCTYPE html>
 			var mode = document.getElementById("mode");
 			if (box) box.classList.add("in");
 			var binds = ["[ None ]", "[ RShift ]", "[ Button 5 ]", "[ Mouse 4 ]"];
-			var colors = ["#2fb5ff", "#4d8dff", "#a78bfa", "#f472b6", "#fb7185", "#fb923c", "#34d399", "#e5e7eb"];
+			var colors = ["#e5e7eb", "#2fb5ff", "#4d8dff", "#a78bfa", "#f472b6", "#fb7185", "#fb923c", "#34d399"];
 			function paintSwatches(wrap) {
 				if (!wrap) return;
 				colors.forEach(function (hex, i) {
@@ -2455,7 +2454,7 @@ const LOGIN_HTML = `<!DOCTYPE html>
 			--bg: #05070d;
 			--text: #f2f4f7;
 			--muted: #8a9aab;
-			--accent: #2fb5ff;
+			--accent: #e5e7eb;
 			--warn: #f5c16c;
 			--line: rgba(255,255,255,0.16);
 		}
@@ -2581,7 +2580,6 @@ const LOGIN_HTML = `<!DOCTYPE html>
 </body>
 </html>
 `;
-
 const MANAGE_HTML = `<!DOCTYPE html>
 <html lang="en" class="locked">
 <head>
@@ -2603,7 +2601,7 @@ const MANAGE_HTML = `<!DOCTYPE html>
 			--line: rgba(255,255,255,0.14);
 			--text: #f2f4f7;
 			--muted: #8a9aab;
-			--accent: #2fb5ff;
+			--accent: #e5e7eb;
 			--warn: #f5c16c;
 			--danger: #fb7185;
 			--ok: #34d399;
