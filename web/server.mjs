@@ -730,11 +730,11 @@ async function lookupName(uuid) {
 	}
 	const dashed = `${id.slice(0, 8)}-${id.slice(8, 12)}-${id.slice(12, 16)}-${id.slice(16, 20)}-${id.slice(20)}`;
 	const attempts = [
-		["https://sessionserver.mojang.com/session/minecraft/profile/" + id, (data) => data.name],
-		["https://crafthead.net/profile/" + id, (data) => data.name],
-		["https://mowojang.matdoes.dev/" + dashed, (data) => data.name],
-		["https://playerdb.co/api/player/minecraft/" + dashed, (data) => data?.data?.player?.username],
-		["https://api.ashcon.app/mojang/v2/user/" + dashed, (data) => data.username || data.name]
+		{ url: "https://sessionserver.mojang.com/session/minecraft/profile/" + id, read: (data) => data.name },
+		{ url: "https://crafthead.net/profile/" + id, read: (data) => data.name },
+		{ url: "https://mowojang.matdoes.dev/" + dashed, read: (data) => data.name },
+		{ url: "https://playerdb.co/api/player/minecraft/" + dashed, read: (data) => data?.data?.player?.username },
+		{ url: "https://api.ashcon.app/mojang/v2/user/" + dashed, read: (data) => data.username || data.name }
 	];
 	return firstString(attempts);
 }
@@ -742,18 +742,18 @@ async function lookupName(uuid) {
 async function lookupUuid(name) {
 	const encoded = encodeURIComponent(name);
 	const attempts = [
-		["https://api.mojang.com/users/profiles/minecraft/" + encoded, (data) => data.id],
-		["https://mowojang.matdoes.dev/" + encoded, (data) => data.id],
-		["https://crafthead.net/profile/" + encoded, (data) => data.id],
-		["https://playerdb.co/api/player/minecraft/" + encoded, (data) => data?.data?.player?.id || data?.data?.player?.raw_id],
-		["https://api.ashcon.app/mojang/v2/user/" + encoded, (data) => data.uuid]
+		{ url: "https://api.mojang.com/users/profiles/minecraft/" + encoded, read: (data) => data.id },
+		{ url: "https://mowojang.matdoes.dev/" + encoded, read: (data) => data.id },
+		{ url: "https://crafthead.net/profile/" + encoded, read: (data) => data.id },
+		{ url: "https://playerdb.co/api/player/minecraft/" + encoded, read: (data) => data?.data?.player?.id || data?.data?.player?.raw_id },
+		{ url: "https://api.ashcon.app/mojang/v2/user/" + encoded, read: (data) => data.uuid }
 	];
-	for (const pair of attempts) {
-		const data = await fetchJson(pair[0]);
+	for (const attempt of attempts) {
+		const data = await fetchJson(attempt.url);
 		if (!data) {
 			continue;
 		}
-		const uuid = normalizeUuid(pair[1](data));
+		const uuid = normalizeUuid(attempt.read(data));
 		if (uuid) {
 			return uuid;
 		}
@@ -762,12 +762,12 @@ async function lookupUuid(name) {
 }
 
 async function firstString(attempts) {
-	for (const pair of attempts) {
-		const data = await fetchJson(pair[0]);
+	for (const attempt of attempts) {
+		const data = await fetchJson(attempt.url);
 		if (!data) {
 			continue;
 		}
-		const value = String(pair[1](data) || "").trim();
+		const value = String(attempt.read(data) || "").trim();
 		if (value) {
 			return value;
 		}
