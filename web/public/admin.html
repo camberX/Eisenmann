@@ -4,36 +4,68 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>EISENMANN Admin</title>
+	<meta name="theme-color" content="#05070d">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@500;700;800&display=swap" rel="stylesheet">
 	<style>
-		:root { --bg:#03050a; --pane:#0a0e18; --card:#10151f; --line:#1a2336; --text:#e8edf5; --muted:#8b95a8; --accent:#2fb5ff; --warn:#e8b86d; }
+		:root {
+			--bg: #05070d;
+			--text: #f2f4f7;
+			--muted: #8a9aab;
+			--accent: #2fb5ff;
+			--warn: #f5c16c;
+			--line: rgba(255,255,255,0.16);
+		}
 		* { box-sizing: border-box; }
 		html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); font-family: "Nunito Sans", sans-serif; }
-		#stars { position: fixed; inset: 0; z-index: 0; }
-		.vignette { position: fixed; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(900px 500px at 50% 20%, rgba(47,181,255,0.16), transparent 60%); }
-		main { position: relative; z-index: 2; width: min(420px, calc(100% - 28px)); margin: 12vh auto; background: color-mix(in srgb, var(--pane) 90%, transparent); border: 1px solid var(--line); border-radius: 18px; padding: 28px 26px 24px; box-shadow: 0 30px 90px #000a, inset 0 1px 0 #ffffff12; backdrop-filter: blur(18px); }
-		.kicker { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); }
-		h1 { margin: 8px 0 6px; font-size: 28px; letter-spacing: 0.22em; }
-		.rule { width: 22px; height: 3px; background: var(--accent); border-radius: 2px; margin: 10px 0 16px; box-shadow: 0 0 16px var(--accent); }
+		#sky { position: fixed; inset: 0; z-index: 0; }
+		.nebula {
+			position: fixed; inset: -15%; z-index: 1; pointer-events: none;
+			background:
+				radial-gradient(800px 460px at 50% 8%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 62%),
+				radial-gradient(520px 380px at 80% 90%, rgba(167,139,250,0.1), transparent 70%);
+		}
+		.grain {
+			position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.045; mix-blend-mode: overlay;
+			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+		}
+		main {
+			position: relative; z-index: 2; width: min(420px, calc(100% - 28px)); margin: 14vh auto;
+			background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.06));
+			border-radius: 24px; padding: 28px 26px 24px;
+			box-shadow: 0 30px 90px #000a, inset 0 1px 0 rgba(255,255,255,0.32);
+			backdrop-filter: blur(28px) saturate(1.3);
+		}
+		.kicker { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); font-weight: 800; }
+		h1 { margin: 10px 0 0; font-size: 28px; letter-spacing: 0.28em; }
+		.tick { width: 28px; height: 2px; background: var(--accent); border-radius: 2px; margin: 12px 0 16px; box-shadow: 0 0 16px var(--accent); }
 		p, label { color: var(--muted); font-size: 14px; line-height: 1.5; }
 		label { display: block; margin: 0 0 6px; font-weight: 800; color: var(--text); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
-		input { width: 100%; background: #070b12; border: 1px solid var(--line); border-radius: 10px; color: var(--text); padding: 12px 14px; font: inherit; outline: none; }
-		input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(47,181,255,0.15); }
-		button { margin-top: 16px; width: 100%; border: 0; border-radius: 10px; background: var(--accent); color: #041018; font-weight: 800; padding: 12px; cursor: pointer; letter-spacing: 0.08em; text-transform: uppercase; }
+		input {
+			width: 100%; background: rgba(0,0,0,0.28); border: 1px solid var(--line); border-radius: 14px;
+			color: var(--text); padding: 12px 14px; font: inherit; outline: none;
+		}
+		input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+		button {
+			margin-top: 16px; width: 100%; border: 0; border-radius: 999px; background: var(--accent); color: #041018;
+			font-weight: 800; padding: 12px; cursor: pointer; letter-spacing: 0.08em; text-transform: uppercase;
+			box-shadow: 0 10px 28px color-mix(in srgb, var(--accent) 28%, transparent);
+		}
 		button:disabled { opacity: 0.5; }
 		.status { min-height: 20px; margin-top: 14px; font-size: 13px; }
 		.status.err { color: var(--warn); }
-		.back { display: inline-block; margin-top: 16px; color: var(--muted); text-decoration: none; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
+		.back { display: inline-block; margin-top: 16px; color: var(--muted); text-decoration: none; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 800; }
+		.back:hover { color: var(--accent); }
 	</style>
 </head>
 <body>
-	<canvas id="stars"></canvas>
-	<div class="vignette"></div>
+	<canvas id="sky"></canvas>
+	<div class="nebula"></div>
+	<div class="grain"></div>
 	<main>
 		<div class="kicker">Restricted</div>
 		<h1>EISENMANN</h1>
-		<div class="rule"></div>
+		<div class="tick"></div>
 		<p>Enter the Worker admin secret to open the cape desk.</p>
 		<label for="admin">Admin key</label>
 		<input id="admin" type="password" autocomplete="current-password" placeholder="Secret">
@@ -42,27 +74,30 @@
 		<a class="back" href="/">Back to shop</a>
 	</main>
 	<script>
-		(function stars() {
-			var c = document.getElementById("stars");
+		(function sky() {
+			var c = document.getElementById("sky");
 			var ctx = c.getContext("2d");
 			var list = [];
+			var colors = ["#f4f7ff", "#d7e6ff", "#c8f0ff", "#ffe9c8", "#b8d4ff"];
 			function resize() {
 				c.width = window.innerWidth;
 				c.height = window.innerHeight;
 				list = [];
-				var n = Math.floor(c.width * c.height / 9000);
-				for (var i = 0; i < n; i++) list.push({ x: Math.random() * c.width, y: Math.random() * c.height, z: Math.random() * 1.2 + 0.2, s: Math.random() * 1.5 + 0.2 });
+				var n = Math.floor(c.width * c.height / 8500);
+				for (var i = 0; i < n; i++) list.push({ x: Math.random() * c.width, y: Math.random() * c.height, z: Math.random() * 1.2 + 0.2, s: Math.random() * 1.5 + 0.2, c: colors[(Math.random() * colors.length) | 0] });
 			}
 			function tick() {
-				ctx.fillStyle = "#03050a";
+				ctx.fillStyle = "#05070d";
 				ctx.fillRect(0, 0, c.width, c.height);
 				for (var i = 0; i < list.length; i++) {
 					var st = list[i];
 					st.y += st.z * 0.16;
 					if (st.y > c.height) st.y = 0;
-					ctx.fillStyle = "rgba(232,237,245," + (0.22 + st.z * 0.5) + ")";
+					ctx.fillStyle = st.c;
+					ctx.globalAlpha = 0.22 + st.z * 0.5;
 					ctx.fillRect(st.x, st.y, st.s, st.s);
 				}
+				ctx.globalAlpha = 1;
 				requestAnimationFrame(tick);
 			}
 			window.addEventListener("resize", resize);
