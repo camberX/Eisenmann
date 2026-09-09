@@ -1382,6 +1382,7 @@ const STORE_HTML = `<!DOCTYPE html>
 			font: 800 11px/1.2 "Nunito Sans", sans-serif; color: var(--accent); text-align: center;
 			letter-spacing: 0.02em; white-space: pre-line;
 		}
+		.recycle svg { display: block; width: 16px; height: 16px; margin: 0 auto; fill: currentColor; }
 		.recycle b { display: block; font-size: 9px; font-weight: 800; margin-top: 2px; }
 		.main { position: relative; display: flex; flex-direction: column; min-width: 0; }
 		.head {
@@ -1646,7 +1647,7 @@ const STORE_HTML = `<!DOCTYPE html>
 							<div class="face"></div>
 							<span>You</span>
 						</div>
-						<div class="recycle ctrl-only" id="rail-ver">♲<b id="rail-ver-num"></b></div>
+						<div class="recycle ctrl-only" id="rail-ver"><svg viewBox="0 0 24 24"><path d="M8.2 10.4 6.4 3.6 11 8.2h2l4.6-4.6-1.8 6.8C16.6 15 14.6 18 12 18s-4.6-3-3.8-7.6zM9.2 18.2c.8 2 2.1 3.2 2.8 3.2s2-1.2 2.8-3.2c-.8.4-1.7.6-2.8.6s-2-.2-2.8-.6zM16.4 13.2c1.6-1.8 3.4-2.4 4-.2.3 1.2-.6 2.6-2 4-1.2 1.2-2.4 1.6-2.8 1 .2-1.2.4-2.8.8-4.8z"/></svg><b id="rail-ver-num"></b></div>
 					</aside>
 					<section class="main">
 						<div class="head">
