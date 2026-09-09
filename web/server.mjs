@@ -1,4 +1,4 @@
-import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
@@ -29,8 +29,7 @@ const store = {
 		title: "EISENMANN Capes",
 		blurb: ""
 	}),
-	notes: await loadJson(join(DATA, "notes.json"), {}),
-	bans: await loadJson(join(DATA, "bans.json"), {})
+	notes: await loadJson(join(DATA, "notes.json"), {})
 };
 if (!store.tags || typeof store.tags !== "object" || Array.isArray(store.tags)) {
 	store.tags = {};
@@ -46,9 +45,6 @@ if (!store.namesAt || typeof store.namesAt !== "object" || Array.isArray(store.n
 }
 if (!store.notes || typeof store.notes !== "object" || Array.isArray(store.notes)) {
 	store.notes = {};
-}
-if (!store.bans || typeof store.bans !== "object" || Array.isArray(store.bans)) {
-	store.bans = {};
 }
 if (!store.config || typeof store.config !== "object" || Array.isArray(store.config)) {
 	store.config = { paypal: "your-paypal@email.com", price: "$1", title: "EISENMANN Capes", blurb: "" };
@@ -118,15 +114,11 @@ async function route(req, res) {
 			return;
 		}
 		const file = capePath(id);
-		const fake = liveBan(id);
-		if (fake.dirty) {
-			await saveJson(join(DATA, "bans.json"), store.bans);
-		}
 		if (!existsSync(file)) {
-			json(res, 200, { has: false, hash: "", allowed: whitelisted(id), tag: tagFor(id), bypass: hasBypass(id), retryIn: capeRetrySec(id), ban: Boolean(fake.id), banId: fake.id, banUntil: fake.until });
+			json(res, 200, { has: false, hash: "", allowed: whitelisted(id), tag: tagFor(id), bypass: hasBypass(id), retryIn: capeRetrySec(id) });
 			return;
 		}
-		json(res, 200, { has: true, hash: hashFile(file), allowed: whitelisted(id), tag: tagFor(id), bypass: hasBypass(id), retryIn: capeRetrySec(id), ban: Boolean(fake.id), banId: fake.id, banUntil: fake.until });
+		json(res, 200, { has: true, hash: hashFile(file), allowed: whitelisted(id), tag: tagFor(id), bypass: hasBypass(id), retryIn: capeRetrySec(id) });
 		return;
 	}
 	if (req.method === "GET" && path.startsWith("/capes/") && path.endsWith(".png")) {
@@ -175,10 +167,6 @@ async function route(req, res) {
 	}
 	if (req.method === "PUT" && path === "/api/bypass") {
 		await handleBypass(req, res);
-		return;
-	}
-	if ((req.method === "PUT" || req.method === "DELETE") && path === "/api/ban") {
-		await handleBan(req, res);
 		return;
 	}
 	if ((req.method === "PUT" || req.method === "DELETE") && path === "/api/note") {
@@ -432,33 +420,6 @@ async function handleBypass(req, res) {
 	json(res, 200, { ok: true, bypass: Boolean(store.bypass[uuid]), players: await playersFor(store.whitelist) });
 }
 
-async function handleBan(req, res) {
-	const body = await readAdminBody(req, res);
-	if (!body) {
-		return;
-	}
-	const uuid = normalizeUuid(body.uuid);
-	if (!uuid) {
-		json(res, 400, { error: "Need a valid UUID" });
-		return;
-	}
-	if (!whitelisted(uuid)) {
-		json(res, 403, { error: "uuid not whitelisted" });
-		return;
-	}
-	let banId = "";
-	let until = 0;
-	if (req.method === "DELETE") {
-		delete store.bans[uuid];
-	} else {
-		banId = randomBanId();
-		until = Date.now() + BAN_MS;
-		store.bans[uuid] = { id: banId, until };
-	}
-	await saveJson(join(DATA, "bans.json"), store.bans);
-	json(res, 200, { ok: true, ban: Boolean(banId), banId, banUntil: until, players: await playersFor(store.whitelist) });
-}
-
 async function handleNote(req, res) {
 	const body = await readAdminBody(req, res);
 	if (!body) {
@@ -611,7 +572,6 @@ async function persistStore() {
 	await saveJson(join(DATA, "bypass.json"), store.bypass);
 	await saveJson(join(DATA, "capeAt.json"), store.capeAt);
 	await saveJson(join(DATA, "notes.json"), store.notes);
-	await saveJson(join(DATA, "bans.json"), store.bans);
 	await saveJson(join(DATA, "config.json"), store.config);
 }
 
@@ -619,7 +579,6 @@ async function playersFor(uuids, forceNames) {
 	const players = await Promise.all(uuids.map(async (uuid) => {
 		const file = capePath(uuid);
 		const has = existsSync(file);
-		const fake = liveBan(uuid);
 		return {
 			uuid,
 			name: await mojangName(uuid, forceNames),
@@ -628,10 +587,7 @@ async function playersFor(uuids, forceNames) {
 			tag: tagFor(uuid),
 			bypass: hasBypass(uuid),
 			retryIn: capeRetrySec(uuid),
-			note: noteFor(uuid),
-			ban: Boolean(fake.id),
-			banId: fake.id,
-			banUntil: fake.until
+			note: noteFor(uuid)
 		};
 	}));
 	await saveJson(join(DATA, "names.json"), store.names);
@@ -657,38 +613,6 @@ function forgetPlayer(uuid) {
 	delete store.bypass[uuid];
 	delete store.capeAt[uuid];
 	delete store.notes[uuid];
-	delete store.bans[uuid];
-}
-
-function randomBanId() {
-	return "#" + randomBytes(4).toString("hex").toUpperCase();
-}
-
-function liveBan(uuid) {
-	const value = store.bans[uuid];
-	let id = "";
-	let until = 0;
-	let dirty = false;
-	if (typeof value === "string") {
-		id = value.startsWith("#") ? value : "";
-		until = id ? Date.now() + BAN_MS : 0;
-		if (id) {
-			store.bans[uuid] = { id, until };
-			dirty = true;
-		}
-	} else if (value && typeof value === "object") {
-		id = String(value.id || "");
-		id = id.startsWith("#") ? id : "";
-		until = Number(value.until) || 0;
-	}
-	if (!id || until <= Date.now()) {
-		if (store.bans[uuid] != null) {
-			delete store.bans[uuid];
-			dirty = true;
-		}
-		return { id: "", until: 0, dirty };
-	}
-	return { id, until, dirty };
 }
 
 function sanitizeUsername(value) {
@@ -814,7 +738,6 @@ function shopConfig() {
 const MAX_TAG = 48;
 const MAX_NOTE = 160;
 const DAY_MS = 24 * 60 * 60 * 1000;
-const BAN_MS = 360 * DAY_MS;
 
 function sanitizeTag(value) {
 	return String(value || "")

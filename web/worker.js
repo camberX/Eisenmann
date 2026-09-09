@@ -44,14 +44,10 @@ async function route(request, env) {
 		const listed = state.whitelist.includes(id);
 		const tag = tagFor(state, id);
 		const head = await env.CAPES.head(capeKey(id));
-		const fake = liveBan(state, id);
-		if (fake.dirty) {
-			await saveState(env, state);
-		}
 		if (!head) {
-			return json(200, { has: false, hash: "", allowed: listed, tag, bypass: hasBypass(state, id), retryIn: capeRetrySec(state, id), ban: Boolean(fake.id), banId: fake.id, banUntil: fake.until });
+			return json(200, { has: false, hash: "", allowed: listed, tag, bypass: hasBypass(state, id), retryIn: capeRetrySec(state, id) });
 		}
-		return json(200, { has: true, hash: head.customMetadata?.hash || "", allowed: listed, tag, bypass: hasBypass(state, id), retryIn: capeRetrySec(state, id), ban: Boolean(fake.id), banId: fake.id, banUntil: fake.until });
+		return json(200, { has: true, hash: head.customMetadata?.hash || "", allowed: listed, tag, bypass: hasBypass(state, id), retryIn: capeRetrySec(state, id) });
 	}
 	if (request.method === "GET" && path.startsWith("/capes/") && path.endsWith(".png")) {
 		const id = normalizeUuid(path.slice("/capes/".length, -4));
@@ -89,9 +85,6 @@ async function route(request, env) {
 	}
 	if (request.method === "PUT" && path === "/api/bypass") {
 		return handleBypass(request, env);
-	}
-	if ((request.method === "PUT" || request.method === "DELETE") && path === "/api/ban") {
-		return handleBan(request, env);
 	}
 	if ((request.method === "PUT" || request.method === "DELETE") && path === "/api/note") {
 		return handleNote(request, env);
@@ -428,33 +421,6 @@ async function handleShopConfig(request, env) {
 	return json(200, { ok: true, ...state.config });
 }
 
-async function handleBan(request, env) {
-	const checked = await adminBody(request, env);
-	if (checked.error) {
-		return checked.error;
-	}
-	const uuid = normalizeUuid(checked.body.uuid);
-	if (!uuid) {
-		return json(400, { error: "Need a valid UUID" });
-	}
-	const state = await loadState(env);
-	if (!state.whitelist.includes(uuid)) {
-		return json(403, { error: "uuid not whitelisted" });
-	}
-	state.bans = objectMap(state.bans);
-	let banId = "";
-	let until = 0;
-	if (request.method === "DELETE") {
-		delete state.bans[uuid];
-	} else {
-		banId = randomBanId();
-		until = Date.now() + BAN_MS;
-		state.bans[uuid] = { id: banId, until };
-	}
-	await saveState(env, state);
-	return json(200, { ok: true, ban: Boolean(banId), banId, banUntil: until, players: await playersFor(env, state) });
-}
-
 async function adminBody(request, env) {
 	const admin = env.ADMIN || "";
 	if (!admin) {
@@ -515,43 +481,6 @@ function noteFor(state, uuid) {
 	return sanitizeNote(objectMap(state.notes)[uuid]);
 }
 
-function liveBan(state, uuid) {
-	state.bans = objectMap(state.bans);
-	const value = state.bans[uuid];
-	let id = "";
-	let until = 0;
-	let dirty = false;
-	if (typeof value === "string") {
-		id = value.startsWith("#") ? value : "";
-		until = id ? Date.now() + BAN_MS : 0;
-		if (id) {
-			state.bans[uuid] = { id, until };
-			dirty = true;
-		}
-	} else if (value && typeof value === "object") {
-		id = String(value.id || "");
-		id = id.startsWith("#") ? id : "";
-		until = Number(value.until) || 0;
-	}
-	if (!id || until <= Date.now()) {
-		if (state.bans[uuid] != null) {
-			delete state.bans[uuid];
-			dirty = true;
-		}
-		return { id: "", until: 0, dirty };
-	}
-	return { id, until, dirty };
-}
-
-function banIdOf(state, uuid) {
-	return liveBan(state, uuid).id;
-}
-
-function randomBanId() {
-	const bytes = crypto.getRandomValues(new Uint8Array(4));
-	return "#" + [...bytes].map((byte) => byte.toString(16).padStart(2, "0")).join("").toUpperCase();
-}
-
 function shopConfig(state, env) {
 	const stored = objectMap(state.config);
 	return {
@@ -564,7 +493,6 @@ function shopConfig(state, env) {
 const MAX_TAG = 48;
 const MAX_NOTE = 160;
 const DAY_MS = 24 * 60 * 60 * 1000;
-const BAN_MS = 360 * DAY_MS;
 
 function sanitizeTag(value) {
 	return String(value || "")
@@ -650,7 +578,6 @@ async function deskSessionOk(request, env) {
 async function playersFor(env, state, forceNames) {
 	return Promise.all(state.whitelist.map(async (uuid) => {
 		const head = await env.CAPES.head(capeKey(uuid));
-		const fake = liveBan(state, uuid);
 		return {
 			uuid,
 			name: await mojangName(uuid, state, forceNames),
@@ -659,10 +586,7 @@ async function playersFor(env, state, forceNames) {
 			tag: tagFor(state, uuid),
 			bypass: hasBypass(state, uuid),
 			retryIn: capeRetrySec(state, uuid),
-			note: noteFor(state, uuid),
-			ban: Boolean(fake.id),
-			banId: fake.id,
-			banUntil: fake.until
+			note: noteFor(state, uuid)
 		};
 	}));
 }
@@ -698,9 +622,6 @@ function forgetPlayer(state, uuid) {
 	}
 	if (state.notes) {
 		delete state.notes[uuid];
-	}
-	if (state.bans) {
-		delete state.bans[uuid];
 	}
 }
 
@@ -806,7 +727,7 @@ async function fetchJson(url) {
 }
 
 async function loadState(env) {
-	const empty = { whitelist: [], names: {}, namesAt: {}, tags: {}, bypass: {}, capeAt: {}, notes: {}, bans: {}, config: {} };
+	const empty = { whitelist: [], names: {}, namesAt: {}, tags: {}, bypass: {}, capeAt: {}, notes: {}, config: {} };
 	const object = await env.CAPES.get("state.json");
 	if (!object) {
 		return empty;
@@ -821,7 +742,6 @@ async function loadState(env) {
 			bypass: objectMap(parsed.bypass),
 			capeAt: objectMap(parsed.capeAt),
 			notes: objectMap(parsed.notes),
-			bans: objectMap(parsed.bans),
 			config: objectMap(parsed.config)
 		};
 	} catch {
@@ -830,7 +750,9 @@ async function loadState(env) {
 }
 
 async function saveState(env, state) {
-	await env.CAPES.put("state.json", JSON.stringify(state));
+	const copy = { ...state };
+	delete copy.bans;
+	await env.CAPES.put("state.json", JSON.stringify(copy));
 }
 
 function capeKey(uuid) {
@@ -2746,7 +2668,7 @@ const MANAGE_HTML = `<!DOCTYPE html>
 				<div class="top">
 					<div>
 						<h1>PLAYERS</h1>
-						<p class="hint">Click a row for cape, tag, note, cooldown, fake ban, and dewhitelist.</p>
+						<p class="hint">Click a row for cape, tag, note, cooldown, and dewhitelist.</p>
 					</div>
 					<div class="toolbar">
 						<button type="button" class="ghost" id="refresh">Refresh names</button>
@@ -2777,7 +2699,6 @@ const MANAGE_HTML = `<!DOCTYPE html>
 					<button type="button" class="chip" data-filter="none">No cape</button>
 					<button type="button" class="chip" data-filter="tag">Tagged</button>
 					<button type="button" class="chip" data-filter="bypass">Bypass</button>
-					<button type="button" class="chip" data-filter="ban">Fake ban</button>
 					<button type="button" class="chip" data-filter="lock">On cooldown</button>
 				</div>
 				<p class="empty" id="empty">No players yet.</p>
@@ -2832,10 +2753,6 @@ const MANAGE_HTML = `<!DOCTYPE html>
 				<button type="button" class="warn" id="d-reset">Reset cooldown</button>
 			</div>
 			<label class="bypass" style="margin:14px 0"><input id="d-bypass" type="checkbox"> Upload bypass</label>
-			<div class="row" style="margin-top:8px">
-				<button type="button" class="danger" id="d-ban">Fake ban</button>
-				<button type="button" class="warn" id="d-unban" hidden>Lift fake ban</button>
-			</div>
 			<button type="button" class="danger" id="d-kick" style="margin-top:12px">Dewhitelist</button>
 		</div>
 	</div>
@@ -3089,19 +3006,6 @@ const MANAGE_HTML = `<!DOCTYPE html>
 			return total + "s";
 		}
 
-		function formatBanLeft(until) {
-			var ms = Number(until) - Date.now();
-			if (!(ms > 0)) return "";
-			var s = Math.floor(ms / 1000);
-			var d = Math.floor(s / 86400);
-			s = s % 86400;
-			var h = Math.floor(s / 3600);
-			s = s % 3600;
-			var m = Math.floor(s / 60);
-			s = s % 60;
-			return d + "d " + h + "h " + m + "m " + s + "s";
-		}
-
 		function playerBy(id) {
 			return cache.find(function (player) { return player.uuid === id; });
 		}
@@ -3113,7 +3017,6 @@ const MANAGE_HTML = `<!DOCTYPE html>
 			if (filter === "none") return !player.cape;
 			if (filter === "tag") return Boolean(player.tag);
 			if (filter === "bypass") return Boolean(player.bypass);
-			if (filter === "ban") return Boolean(player.ban);
 			if (filter === "lock") return !player.bypass && player.retryIn > 0;
 			return true;
 		}
@@ -3179,8 +3082,6 @@ const MANAGE_HTML = `<!DOCTYPE html>
 				if (player.cape) badge("Cape", true, false);
 				if (player.tag) badge("Tag", true, false);
 				if (player.bypass) badge("Bypass", true, false);
-				if (player.ban) badge(player.banId ? "Ban " + player.banId : "Fake ban", false, true);
-				if (player.ban && player.banUntil) badge(formatBanLeft(player.banUntil), false, true);
 				if (!player.bypass && player.retryIn > 0) badge(formatWait(player.retryIn), false, true);
 				meta.append(badges);
 				let capeBox;
@@ -3207,7 +3108,7 @@ const MANAGE_HTML = `<!DOCTYPE html>
 
 		function fillDrawer(player) {
 			selected = player.uuid;
-			document.getElementById("d-who").textContent = (player.name || "Unknown") + "  ·  " + player.uuid + (player.banId ? "  ·  " + player.banId + (player.banUntil ? "  ·  " + formatBanLeft(player.banUntil) : "") : "");
+			document.getElementById("d-who").textContent = (player.name || "Unknown") + "  ·  " + player.uuid;
 			document.getElementById("d-note").value = player.note || "";
 			document.getElementById("d-bypass").checked = Boolean(player.bypass);
 			document.getElementById("d-url").value = "";
@@ -3223,8 +3124,6 @@ const MANAGE_HTML = `<!DOCTYPE html>
 			document.getElementById("d-nocape").hidden = Boolean(player.cape);
 			document.getElementById("d-dl").disabled = !player.cape;
 			document.getElementById("d-reset").disabled = !(player.retryIn > 0);
-			document.getElementById("d-ban").hidden = Boolean(player.ban);
-			document.getElementById("d-unban").hidden = !player.ban;
 			loadModel(player);
 		}
 
@@ -3671,25 +3570,6 @@ const MANAGE_HTML = `<!DOCTYPE html>
 			tagtext.value = player.tag || "";
 			tagbox.hidden = false;
 			paintPreview();
-		};
-		document.getElementById("d-ban").onclick = function () {
-			const player = playerBy(selected);
-			if (!player) return;
-			admin("/api/ban", "PUT", { uuid: selected })
-				.then(function (data) {
-					draw(data.players || []);
-					setStatus(true, "Fake ban " + (data.banId || "") + " queued. They see it within a couple of seconds.");
-				})
-				.catch(function (error) { setStatus(false, error.message); });
-		};
-		document.getElementById("d-unban").onclick = function () {
-			if (!selected) return;
-			admin("/api/ban", "DELETE", { uuid: selected })
-				.then(function (data) {
-					draw(data.players || []);
-					setStatus(true, "Fake ban lifted.");
-				})
-				.catch(function (error) { setStatus(false, error.message); });
 		};
 		document.getElementById("d-kick").onclick = function () {
 			if (!selected) return;
