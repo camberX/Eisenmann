@@ -1648,8 +1648,8 @@ const STORE_HTML = `<!DOCTYPE html>
 						<div class="grp">VISUALS</div>
 						<button type="button" class="tab on" data-tab="world"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.9 9h-3.2a15 15 0 0 0-1.4-6 8 8 0 0 1 4.6 6zM12 4c.8 1.3 1.5 3.4 1.8 6H10.2C10.5 7.4 11.2 5.3 12 4zM4.1 13h3.2c.2 2.2.7 4.2 1.4 6A8 8 0 0 1 4.1 13zM8.7 11H5.1A8 8 0 0 1 9.7 5a15 15 0 0 0-1 6zm1.5 2h3.6c-.3 2.6-1 4.7-1.8 6-.8-1.3-1.5-3.4-1.8-6zm5.1 6c.7-1.8 1.2-3.8 1.4-6h3.2a8 8 0 0 1-4.6 6z"/></svg>World</button>
 						<button type="button" class="tab" data-tab="combat"><svg viewBox="0 0 24 24"><path d="M6.5 2 4 6l2 2-6 6 4 4 6-6 2 2 4-2.5L14 8l2-2-1-3-3 1-2-2zM16 14l6 6-2 2-6-6z"/></svg>Combat</button>
-						<div class="grp">ESP</div>
-						<button type="button" class="tab" data-tab="esp"><svg viewBox="0 0 24 24"><path d="M12 5C7 5 2.7 8.1 1 12c1.7 3.9 6 7 11 7s9.3-3.1 11-7c-1.7-3.9-6-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>ESP</button>
+						<div class="grp">VISUALS</div>
+						<button type="button" class="tab" data-tab="esp"><svg viewBox="0 0 24 24"><path d="M12 5C7 5 2.7 8.1 1 12c1.7 3.9 6 7 11 7s9.3-3.1 11-7c-1.7-3.9-6-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>Visuals</button>
 						<div class="grp">HUD</div>
 						<button type="button" class="tab" data-tab="hud"><svg viewBox="0 0 24 24"><path d="M3 5h18v10H3zm2 2v6h14V7zM8 17h8v2H8z"/></svg>HUD</button>
 						<button type="button" class="tab" data-tab="mining"><svg viewBox="0 0 24 24"><path d="M12 2 4 7v10l8 5 8-5V7zm0 2.2 5.8 3.6L12 11.6 6.2 7.8zm-6 5.2 5 3.1v6.3L6 16.3zm8 9.4v-6.3l5-3.1v6.3z"/></svg>Mining</button>
@@ -1702,6 +1702,7 @@ const STORE_HTML = `<!DOCTYPE html>
 									<div class="row"><span>Mob glow</span><button type="button" class="tog on"></button></div>
 									<div class="row"><span>Player fill</span><button type="button" class="tog on"></button></div>
 									<div class="row"><span>Chest ESP</span><button type="button" class="tog on"></button></div>
+									<div class="row"><span>Held item</span><button type="button" class="tog on"></button></div>
 								</div>
 								<div class="card">
 									<h3>MOBS</h3>
@@ -1760,7 +1761,7 @@ const STORE_HTML = `<!DOCTYPE html>
 			<div class="feats">
 				<article class="feat"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/></svg><b>World</b><span>Terrain tint, skybox, fog, and aspect without touching shaders.</span></article>
 				<article class="feat"><svg viewBox="0 0 24 24"><path d="M6.5 2 4 6l2 2-6 6 4 4 6-6 2 2 4-2.5L14 8l2-2z"/></svg><b>Combat</b><span>Hitsounds, triggerbot, Terminator CPS, and in-menu clicker binds.</span></article>
-				<article class="feat"><svg viewBox="0 0 24 24"><path d="M12 5C7 5 2.7 8.1 1 12c1.7 3.9 6 7 11 7s9.3-3.1 11-7c-1.7-3.9-6-7-11-7z"/></svg><b>ESP</b><span>Mob glow, player fill through walls, chest ESP, and nametag filters.</span></article>
+				<article class="feat"><svg viewBox="0 0 24 24"><path d="M12 5C7 5 2.7 8.1 1 12c1.7 3.9 6 7 11 7s9.3-3.1 11-7c-1.7-3.9-6-7-11-7z"/></svg><b>Visuals</b><span>Mob glow, player fill, chest ESP, held-item shader, and nametag filters.</span></article>
 				<article class="feat"><svg viewBox="0 0 24 24"><path d="M3 5h18v10H3zM8 17h8v2H8z"/></svg><b>HUD</b><span>Watermark, Spotify, raw mats, restyled bars, and a live editor.</span></article>
 				<article class="feat"><svg viewBox="0 0 24 24"><path d="M12 2 4 7v10l8 5 8-5V7z"/></svg><b>Mining</b><span>Commission HUD, titanium ESP, and hold-to-aim lockboxes.</span></article>
 				<article class="feat"><svg viewBox="0 0 24 24"><path d="M12 2 4 7l8 5 8-5zM4 12l8 5 8-5"/></svg><b>Farming</b><span>Yaw / pitch overlay and a Jacob contest tracker on the tab list.</span></article>
@@ -1912,7 +1913,7 @@ const STORE_HTML = `<!DOCTYPE html>
 			next(0);
 		})();
 		(function menu() {
-			var titles = { world: "World", combat: "Combat", esp: "ESP", hud: "HUD", mining: "Mining", player: "Player" };
+			var titles = { world: "World", combat: "Combat", esp: "Visuals", hud: "HUD", mining: "Mining", player: "Player" };
 			var tabs = document.querySelectorAll(".tab, #you");
 			var panels = document.querySelectorAll(".cols");
 			var title = document.getElementById("bar-title");
