@@ -1693,7 +1693,7 @@ const STORE_HTML = `<!DOCTYPE html>
 				</div>
 			</div>
 			<div class="stage">
-				<div class="gui" id="menu">
+				<div class="gui in" id="menu">
 					<aside class="rail">
 						<div class="rail-pill" id="nav-pill"></div>
 						<div class="brand-mini eisen-only">EISENMANN<b id="menu-ver"></b></div>
@@ -1723,7 +1723,7 @@ const STORE_HTML = `<!DOCTYPE html>
 							<div class="face"></div>
 							<span>You</span>
 						</div>
-						<div class="recycle ctrl-only" id="rail-ver">♲</div>
+						<div class="recycle ctrl-only" id="rail-ver">♲<b id="rail-ver-num"></b></div>
 					</aside>
 					<section class="main">
 						<div class="head">
@@ -2215,8 +2215,9 @@ const STORE_HTML = `<!DOCTYPE html>
 			}
 			function apply(data) {
 				ver.textContent = "v" + data.version;
-				menuVer.textContent = "v" + data.version;
-				railVer.textContent = "♲\nv" + data.version;
+				if (menuVer) menuVer.textContent = "v" + data.version;
+				var railNum = document.getElementById("rail-ver-num");
+				if (railNum) railNum.textContent = "v" + data.version;
 				stat.textContent = data.version;
 				for (var i = 0; i < links.length; i++) {
 					links[i].classList.remove("dead");
@@ -2268,6 +2269,9 @@ const STORE_HTML = `<!DOCTYPE html>
 			var headFace = document.getElementById("head-face");
 			var you = document.getElementById("you");
 			var guiLabel = document.getElementById("gui-label");
+			var nick = document.querySelector(".nick");
+			var mode = document.getElementById("mode");
+			if (box) box.classList.add("in");
 			var binds = ["[ None ]", "[ RShift ]", "[ Button 5 ]", "[ Mouse 4 ]"];
 			var colors = ["#2fb5ff", "#4d8dff", "#a78bfa", "#f472b6", "#fb7185", "#fb923c", "#34d399", "#e5e7eb"];
 			function paintSwatches(wrap) {
@@ -2296,6 +2300,16 @@ const STORE_HTML = `<!DOCTYPE html>
 			function eisenMode() {
 				return document.body.classList.contains("eisen");
 			}
+			function setMode(eisen) {
+				document.body.classList.toggle("eisen", eisen);
+				document.body.classList.toggle("ctrl", !eisen);
+				if (mode) {
+					mode.querySelectorAll("button").forEach(function (x) {
+						x.classList.toggle("on", (x.getAttribute("data-mode") === "eisen") === eisen);
+					});
+				}
+				if (guiLabel) guiLabel.textContent = eisen ? "Eisenmann" : "Control";
+			}
 			function activeRail() {
 				if (eisenMode()) {
 					if (current === "player") return you;
@@ -2304,6 +2318,7 @@ const STORE_HTML = `<!DOCTYPE html>
 				return document.querySelector(".tab.ctrl-only.on");
 			}
 			function movePill(el) {
+				if (!pill) return;
 				if (!el || el.id === "you" || current === "player") {
 					pill.classList.add("hide");
 					return;
@@ -2313,6 +2328,7 @@ const STORE_HTML = `<!DOCTYPE html>
 				pill.style.height = el.offsetHeight + "px";
 			}
 			function paintHead(name) {
+				if (!headTabs) return;
 				var group = TAB_GROUP[name];
 				var tabs = GROUPS[group] || [];
 				headTabs.innerHTML = "";
@@ -2334,15 +2350,17 @@ const STORE_HTML = `<!DOCTYPE html>
 				document.querySelectorAll(".tab.eisen-only").forEach(function (t) {
 					t.classList.toggle("on", t.getAttribute("data-tab") === name);
 				});
-				you.classList.toggle("on", name === "player");
-				headFace.classList.toggle("on", name === "player");
+				if (you) you.classList.toggle("on", name === "player");
+				if (headFace) headFace.classList.toggle("on", name === "player");
 				panels.forEach(function (p) { p.classList.toggle("on", p.getAttribute("data-panel") === name); });
-				title.textContent = titles[name] || name;
-				title.replaceWith(title.cloneNode(true));
-				title = document.getElementById("bar-title");
-				wm.hidden = name !== "overlay";
-				theme.classList.remove("on");
-				themeBtn.classList.remove("on");
+				if (title) {
+					title.textContent = titles[name] || name;
+					title.replaceWith(title.cloneNode(true));
+					title = document.getElementById("bar-title");
+				}
+				if (wm) wm.hidden = name !== "overlay";
+				if (theme) theme.classList.remove("on");
+				if (themeBtn) themeBtn.classList.remove("on");
 				paintHead(name);
 				requestAnimationFrame(function () { movePill(activeRail()); });
 			}
@@ -2356,10 +2374,13 @@ const STORE_HTML = `<!DOCTYPE html>
 			document.querySelectorAll(".tab.eisen-only").forEach(function (t) {
 				t.onclick = function () { show(t.getAttribute("data-tab")); };
 			});
-			you.onclick = function () { show("player"); };
-			headFace.onclick = function () { show("player"); };
-			themeBtn.onclick = function () { theme.classList.toggle("on"); themeBtn.classList.toggle("on"); };
-			box.addEventListener("click", function (e) {
+			if (you) you.onclick = function () { show("player"); };
+			if (headFace) headFace.onclick = function () { show("player"); };
+			if (themeBtn) themeBtn.onclick = function () {
+				if (theme) theme.classList.toggle("on");
+				themeBtn.classList.toggle("on");
+			};
+			if (box) box.addEventListener("click", function (e) {
 				var tog = e.target.closest(".tog");
 				if (tog) tog.classList.toggle("on");
 				var row = e.target.closest(".list button");
@@ -2374,17 +2395,14 @@ const STORE_HTML = `<!DOCTYPE html>
 					bind.textContent = binds[(i + 1) % binds.length];
 				}
 			});
-			document.querySelector(".nick").oninput = function () {
-				you.querySelector("span").textContent = this.value.trim() || "You";
+			if (nick) nick.oninput = function () {
+				if (you && you.querySelector("span")) you.querySelector("span").textContent = this.value.trim() || "You";
 			};
-			document.getElementById("mode").onclick = function (e) {
+			if (mode) mode.onclick = function (e) {
 				var b = e.target.closest("button");
 				if (!b) return;
-				document.querySelectorAll("#mode button").forEach(function (x) { x.classList.toggle("on", x === b); });
 				var eisen = b.getAttribute("data-mode") === "eisen";
-				document.body.classList.toggle("eisen", eisen);
-				document.body.classList.toggle("ctrl", !eisen);
-				if (guiLabel) guiLabel.textContent = eisen ? "Eisenmann" : "Control";
+				setMode(eisen);
 				if (eisen && current === "theme") show("world");
 				else {
 					paintHead(current);
@@ -2393,9 +2411,10 @@ const STORE_HTML = `<!DOCTYPE html>
 			};
 			paintHead(current);
 			movePill(activeRail());
-			requestAnimationFrame(function () { box.classList.add("in"); });
 			var c = document.getElementById("pane-stars");
+			if (!c || !c.getContext) return;
 			var ctx = c.getContext("2d");
+			if (!ctx) return;
 			var stars = [];
 			function resize() {
 				c.width = c.clientWidth;
