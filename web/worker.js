@@ -1366,9 +1366,9 @@ const STORE_HTML = `<!DOCTYPE html>
 			letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 12px; border-radius: 999px; cursor: pointer;
 		}
 		.mode button.on { background: rgba(255,255,255,0.16); color: var(--text); }
-		.stage { position: relative; min-height: 520px; }
+		.stage { position: relative; min-height: 560px; }
 		.gui {
-			width: 720px; height: 488px; max-width: 100%;
+			width: 760px; height: 560px; max-width: 100%;
 			display: grid; grid-template-columns: 88px 1fr;
 			border-radius: 24px; overflow: hidden; user-select: none;
 			background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.06));
@@ -1389,9 +1389,11 @@ const STORE_HTML = `<!DOCTYPE html>
 			box-shadow: 0 28px 70px #0009, inset 0 0 0 1px var(--line);
 			backdrop-filter: none;
 		}
+		body.ctrl .eisen-only { display: none !important; }
+		body.eisen .ctrl-only { display: none !important; }
 		.rail {
 			position: relative; display: flex; flex-direction: column; align-items: center;
-			padding: 12px 8px 10px; gap: 2px;
+			padding: 10px 8px 8px; gap: 0;
 		}
 		body.eisen .rail { align-items: stretch; padding: 16px 0 10px; background: #121820; }
 		body.eisen .rail::after {
@@ -1399,7 +1401,7 @@ const STORE_HTML = `<!DOCTYPE html>
 			background: color-mix(in srgb, var(--accent) 38%, transparent);
 		}
 		.rail-pill {
-			position: absolute; left: 10px; width: calc(100% - 20px); height: 54px; border-radius: 16px;
+			position: absolute; left: 10px; width: calc(100% - 20px); height: 48px; border-radius: 14px;
 			background: rgba(255,255,255,0.16);
 			transition: top 0.22s var(--ease), height 0.22s var(--ease), opacity 0.16s ease;
 			pointer-events: none; z-index: 0;
@@ -1417,18 +1419,18 @@ const STORE_HTML = `<!DOCTYPE html>
 		body.eisen .rail-tick { display: block; }
 		.rail-tick { display: none; width: 32px; height: 3px; margin: 7px 18px 10px; background: var(--accent); border-radius: 2px; }
 		.grp { display: none; }
-		body.eisen .grp { display: block; padding: 10px 20px 4px; font-size: 10px; letter-spacing: 0.1em; color: var(--header); font-weight: 700; }
+		body.eisen .grp { display: block; padding: 8px 20px 2px; font-size: 10px; letter-spacing: 0.1em; color: var(--header); font-weight: 700; }
 		.tab {
-			position: relative; z-index: 1; width: 72px; height: 54px; border: 0; background: transparent;
-			color: rgba(245,245,247,0.62); cursor: pointer; border-radius: 16px;
+			position: relative; z-index: 1; width: 72px; height: 48px; border: 0; background: transparent;
+			color: rgba(245,245,247,0.62); cursor: pointer; border-radius: 14px;
 			display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-			font: 800 9px/1 "Nunito Sans", sans-serif; letter-spacing: 0.04em;
+			font: 800 8px/1 "Nunito Sans", sans-serif; letter-spacing: 0.04em;
 		}
-		.tab svg { width: 18px; height: 18px; fill: currentColor; }
+		.tab svg { width: 16px; height: 16px; fill: currentColor; }
 		.tab.on { color: #f5f5f7; }
 		.tab:hover:not(.on) { color: #fff; }
 		body.eisen .tab {
-			width: calc(100% - 24px); height: 32px; margin: 2px 12px; padding: 0 12px;
+			width: calc(100% - 24px); height: 32px; margin: 1px 12px; padding: 0 12px;
 			flex-direction: row; justify-content: flex-start; gap: 10px;
 			font: 700 15px/1 "Nunito Sans", sans-serif; color: var(--muted); border-radius: 8px;
 		}
@@ -1437,72 +1439,117 @@ const STORE_HTML = `<!DOCTYPE html>
 		body.eisen .tab.on svg { fill: var(--text); }
 		body.eisen .tab:hover:not(.on) { background: #ffffff14; }
 		.you {
-			margin-top: auto; position: relative; z-index: 1; width: 72px; padding: 8px 0 2px;
-			display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; color: rgba(245,245,247,0.7);
-			font: 800 9px/1 "Nunito Sans", sans-serif;
+			margin-top: auto; position: relative; z-index: 1; width: auto; padding: 12px 18px 4px;
+			display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px;
+			cursor: pointer; color: var(--header);
+			font: 700 15px/1 "Nunito Sans", sans-serif;
+			border-top: 2px solid var(--accent);
 		}
-		.you.on { color: #fff; }
-		.face { width: 28px; height: 28px; border-radius: 9px; background: linear-gradient(#d7b08a, #8a6240); box-shadow: inset 0 -10px 0 #6d4a2e; }
-		body.eisen .you {
-			width: auto; flex-direction: row; justify-content: flex-start; gap: 8px;
-			border-top: 2px solid var(--accent); padding: 12px 18px 4px; font: 700 15px/1 "Nunito Sans", sans-serif; color: var(--header);
+		.you.on { color: var(--text); }
+		.face, .head-face {
+			width: 22px; height: 22px; border-radius: 4px; flex: 0 0 auto;
+			background: linear-gradient(#d7b08a, #8a6240); box-shadow: inset 0 -8px 0 #6d4a2e;
 		}
-		body.eisen .face { border-radius: 4px; }
-		.recycle { font-size: 13px; color: var(--accent); margin-top: 4px; }
-		body.eisen .recycle { display: none; }
+		.head-face {
+			width: 22px; height: 22px; border: 0; padding: 0; cursor: pointer; border-radius: 7px;
+		}
+		.head-face.on { outline: 2px solid var(--accent); outline-offset: 1px; }
+		.recycle {
+			margin-top: auto; position: relative; z-index: 1; padding: 6px 0 2px;
+			font: 800 11px/1.2 "Nunito Sans", sans-serif; color: var(--accent); text-align: center;
+			letter-spacing: 0.02em; white-space: pre-line;
+		}
+		.recycle b { display: block; font-size: 9px; font-weight: 800; margin-top: 2px; }
 		.main { position: relative; display: flex; flex-direction: column; min-width: 0; }
 		.head {
-			height: 44px; display: flex; align-items: center; gap: 10px; padding: 0 16px;
+			height: 44px; display: flex; align-items: center; gap: 8px; padding: 0 14px;
 		}
 		.head h2 {
 			margin: 0; font-size: 15px; font-weight: 800; letter-spacing: 0.02em;
 			position: relative; padding-bottom: 4px;
 		}
+		body.ctrl .head h2 { display: none; }
 		.head h2::after {
 			content: ""; position: absolute; left: 0; bottom: 0; width: 100%; height: 2px;
 			background: var(--accent); border-radius: 2px; transform-origin: left;
 			animation: under 0.28s var(--ease);
 		}
 		@keyframes under { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+		.head-tabs { display: flex; align-items: center; gap: 12px; min-width: 0; }
+		.head-tab {
+			border: 0; background: transparent; color: rgba(245,245,247,0.55); cursor: pointer;
+			font: 800 13px/1 "Nunito Sans", sans-serif; padding: 0 1px 7px; position: relative;
+		}
+		.head-tab.on { color: #f5f5f7; }
+		.head-tab.on::after {
+			content: ""; position: absolute; left: 0; bottom: 0; width: 100%; height: 1.5px;
+			background: currentColor; border-radius: 1px;
+		}
 		.search {
-			margin-left: auto; height: 28px; width: 148px; border-radius: 999px; border: 0;
+			margin-left: auto; height: 28px; width: 110px; border-radius: 999px; border: 0;
 			background: rgba(0,0,0,0.18); color: var(--text); padding: 0 12px;
 			font: 600 12px/1 "Nunito Sans", sans-serif;
 		}
-		body.eisen .search { background: var(--card); }
+		body.eisen .search { background: var(--card); width: 148px; }
 		.iconbtn {
-			width: 28px; height: 28px; border: 0; background: transparent; color: rgba(245,245,247,0.7);
-			padding: 0; cursor: pointer; display: grid; place-items: center;
+			width: 26px; height: 26px; border: 0; background: transparent; color: rgba(245,245,247,0.7);
+			padding: 0; cursor: pointer; display: grid; place-items: center; flex: 0 0 auto;
 		}
 		.iconbtn:hover, .iconbtn.on { color: var(--accent); }
-		.iconbtn svg { width: 16px; height: 16px; fill: currentColor; }
+		.iconbtn svg { width: 15px; height: 15px; fill: currentColor; }
 		.pane { position: relative; flex: 1; overflow: hidden; }
 		#pane-stars { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; display: none; }
 		body.eisen #pane-stars { display: block; }
 		.cols {
-			position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-			padding: 6px 14px 14px; align-content: start;
+			position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+			padding: 4px 12px 12px; align-content: start; align-items: start;
 			opacity: 0; transform: translateY(12px); pointer-events: none;
 			transition: opacity 0.2s ease, transform 0.24s var(--ease);
+			overflow: auto;
 		}
 		.cols.on { opacity: 1; transform: none; pointer-events: auto; }
 		.cols.one { grid-template-columns: 1fr; }
+		.stack { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 		.card {
-			background: rgba(255,255,255,0.12); border-radius: 18px; padding: 12px 14px 12px;
+			background: rgba(255,255,255,0.12); border-radius: 16px; padding: 10px 12px 8px;
 			box-shadow: inset 0 1px 0 rgba(255,255,255,0.22);
 		}
 		body.eisen .card { background: var(--card); border-radius: 12px; box-shadow: none; }
 		.card h3 {
-			margin: 0 0 8px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.12);
+			margin: 0 0 6px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.12);
 			font-size: 10px; letter-spacing: 0.1em; color: var(--header); font-weight: 800;
 		}
 		body.eisen .card h3 { border-bottom-color: var(--line); }
-		.row { display: flex; align-items: center; justify-content: space-between; min-height: 30px; gap: 10px; }
-		.row span { font-size: 14px; font-weight: 700; }
-		.row em { font-style: normal; font-size: 12px; color: var(--muted); }
+		.row { display: flex; align-items: center; justify-content: space-between; min-height: 26px; gap: 8px; }
+		.row span { font-size: 13px; font-weight: 700; }
+		.row em, .val { font-style: normal; font-size: 12px; color: var(--muted); font-weight: 700; }
+		.val { color: var(--accent); }
+		.hint { font-size: 11px; color: var(--muted); padding: 2px 0 6px; }
+		.dot {
+			width: 14px; height: 14px; border-radius: 4px; flex: 0 0 auto;
+			background: var(--accent); border: 1px solid #0005;
+		}
+		.chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 0 6px; }
+		.chip {
+			border: 0; background: rgba(255,255,255,0.10); color: var(--muted); cursor: pointer;
+			font: 800 10px/1 "Nunito Sans", sans-serif; letter-spacing: 0.04em; text-transform: uppercase;
+			padding: 6px 8px; border-radius: 8px;
+		}
+		.chip.on { background: var(--accent); color: #061018; }
+		.slide { display: flex; align-items: center; gap: 8px; min-height: 24px; }
+		.slide span { font-size: 13px; font-weight: 700; min-width: 58px; }
+		.slide em { margin-left: auto; font-style: normal; font-size: 11px; color: var(--muted); font-weight: 700; }
+		.bar {
+			flex: 1; height: 4px; border-radius: 99px; background: rgba(255,255,255,0.16); position: relative;
+		}
+		.bar i {
+			position: absolute; top: -3px; width: 10px; height: 10px; border-radius: 50%;
+			background: var(--accent); box-shadow: 0 0 8px var(--accent);
+		}
 		.bind {
 			font: 800 11px/1 "Nunito Sans", sans-serif; color: var(--accent); letter-spacing: 0.02em;
 			padding: 5px 8px; border-radius: 6px; background: color-mix(in srgb, var(--accent) 16%, transparent);
+			cursor: pointer; border: 0;
 		}
 		.tog {
 			width: 42px; height: 24px; border: 0; padding: 0; border-radius: 99px;
@@ -1534,11 +1581,17 @@ const STORE_HTML = `<!DOCTYPE html>
 		.sheet.on { opacity: 1; transform: none; pointer-events: auto; }
 		.sheet h3 { margin: 0 0 10px; font-size: 11px; letter-spacing: 0.08em; color: var(--header); }
 		.swatches, #hero-swatches { display: flex; flex-wrap: wrap; gap: 8px; }
-		.nick {
+		.nick, .field {
 			width: 100%; background: rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.12);
-			color: var(--text); font: 700 14px "Nunito Sans", sans-serif; padding: 8px 10px; border-radius: 10px;
+			color: var(--text); font: 700 13px "Nunito Sans", sans-serif; padding: 7px 10px; border-radius: 8px;
 		}
-		.skin { width: 84px; height: 112px; margin: 8px auto 10px; background: linear-gradient(#c2a27a, #8a6a4a); border-radius: 12px; }
+		.skin { width: 72px; height: 96px; margin: 6px auto 8px; background: linear-gradient(#c2a27a, #8a6a4a); border-radius: 10px; }
+		.filebtn {
+			width: 100%; text-align: left; border: 1px solid rgba(255,255,255,0.12);
+			background: rgba(0,0,0,0.18); color: var(--text); font: 700 13px "Nunito Sans", sans-serif;
+			padding: 7px 10px; border-radius: 8px; cursor: pointer; margin-top: 4px;
+		}
+		.filebtn:hover { background: rgba(255,255,255,0.08); }
 		.watermark {
 			position: absolute; left: 18px; top: 12px; font-size: 11px; font-weight: 800; letter-spacing: 0.18em;
 			color: color-mix(in srgb, var(--accent) 80%, #fff); opacity: 0.9; pointer-events: none;
@@ -1590,16 +1643,16 @@ const STORE_HTML = `<!DOCTYPE html>
 		@media (max-width: 1020px) {
 			.hero, .cape, .feats { grid-template-columns: 1fr; }
 			.stage { min-height: 0; overflow: hidden; }
-			.gui { width: 720px; transform: scale(0.72); transform-origin: top left; }
-			.gui.in { transform: scale(0.72); }
-			.stage { height: calc(488px * 0.72); }
+			.gui { width: 760px; transform: scale(0.68); transform-origin: top left; }
+			.gui.in { transform: scale(0.68); }
+			.stage { height: calc(560px * 0.68); }
 			.hero { min-height: 0; padding-bottom: 12px; }
 		}
 		@media (max-width: 720px) {
 			.wrap { width: calc(100% - 24px); }
-			.gui { transform: scale(0.52); }
-			.gui.in { transform: scale(0.52); }
-			.stage { height: calc(488px * 0.52); }
+			.gui { transform: scale(0.48); }
+			.gui.in { transform: scale(0.48); }
+			.stage { height: calc(560px * 0.48); }
 			h1 { font-size: 42px; }
 		}
 	</style>
@@ -1643,43 +1696,83 @@ const STORE_HTML = `<!DOCTYPE html>
 				<div class="gui" id="menu">
 					<aside class="rail">
 						<div class="rail-pill" id="nav-pill"></div>
-						<div class="brand-mini">EISENMANN<b id="menu-ver"></b></div>
-						<div class="rail-tick"></div>
-						<div class="grp">VISUALS</div>
-						<button type="button" class="tab on" data-tab="world"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.9 9h-3.2a15 15 0 0 0-1.4-6 8 8 0 0 1 4.6 6zM12 4c.8 1.3 1.5 3.4 1.8 6H10.2C10.5 7.4 11.2 5.3 12 4zM4.1 13h3.2c.2 2.2.7 4.2 1.4 6A8 8 0 0 1 4.1 13zM8.7 11H5.1A8 8 0 0 1 9.7 5a15 15 0 0 0-1 6zm1.5 2h3.6c-.3 2.6-1 4.7-1.8 6-.8-1.3-1.5-3.4-1.8-6zm5.1 6c.7-1.8 1.2-3.8 1.4-6h3.2a8 8 0 0 1-4.6 6z"/></svg>World</button>
-						<button type="button" class="tab" data-tab="combat"><svg viewBox="0 0 24 24"><path d="M6.5 2 4 6l2 2-6 6 4 4 6-6 2 2 4-2.5L14 8l2-2-1-3-3 1-2-2zM16 14l6 6-2 2-6-6z"/></svg>Combat</button>
-						<div class="grp">VISUALS</div>
-						<button type="button" class="tab" data-tab="esp"><svg viewBox="0 0 24 24"><path d="M12 5C7 5 2.7 8.1 1 12c1.7 3.9 6 7 11 7s9.3-3.1 11-7c-1.7-3.9-6-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>Visuals</button>
-						<div class="grp">HUD</div>
-						<button type="button" class="tab" data-tab="hud"><svg viewBox="0 0 24 24"><path d="M3 5h18v10H3zm2 2v6h14V7zM8 17h8v2H8z"/></svg>HUD</button>
-						<button type="button" class="tab" data-tab="mining"><svg viewBox="0 0 24 24"><path d="M12 2 4 7v10l8 5 8-5V7zm0 2.2 5.8 3.6L12 11.6 6.2 7.8zm-6 5.2 5 3.1v6.3L6 16.3zm8 9.4v-6.3l5-3.1v6.3z"/></svg>Mining</button>
-						<div class="you" id="you" data-tab="player">
+						<div class="brand-mini eisen-only">EISENMANN<b id="menu-ver"></b></div>
+						<div class="rail-tick eisen-only"></div>
+						<button type="button" class="tab ctrl-only on" data-group="world" data-tab="world"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.9 9h-3.2a15 15 0 0 0-1.4-6 8 8 0 0 1 4.6 6zM12 4c.8 1.3 1.5 3.4 1.8 6H10.2C10.5 7.4 11.2 5.3 12 4zM4.1 13h3.2c.2 2.2.7 4.2 1.4 6A8 8 0 0 1 4.1 13zM8.7 11H5.1A8 8 0 0 1 9.7 5a15 15 0 0 0-1 6zm1.5 2h3.6c-.3 2.6-1 4.7-1.8 6-.8-1.3-1.5-3.4-1.8-6zm5.1 6c.7-1.8 1.2-3.8 1.4-6h3.2a8 8 0 0 1-4.6 6z"/></svg>World</button>
+						<button type="button" class="tab ctrl-only" data-group="combat" data-tab="combat"><svg viewBox="0 0 24 24"><path d="M6.5 2 4 6l2 2-6 6 4 4 6-6 2 2 4-2.5L14 8l2-2-1-3-3 1-2-2zM16 14l6 6-2 2-6-6z"/></svg>Combat</button>
+						<button type="button" class="tab ctrl-only" data-group="visuals" data-tab="visuals"><svg viewBox="0 0 24 24"><path d="M12 5C7 5 2.7 8.1 1 12c1.7 3.9 6 7 11 7s9.3-3.1 11-7c-1.7-3.9-6-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>Visuals</button>
+						<button type="button" class="tab ctrl-only" data-group="hud" data-tab="overlay"><svg viewBox="0 0 24 24"><path d="M3 5h18v10H3zm2 2v6h14V7zM8 17h8v2H8z"/></svg>HUD</button>
+						<button type="button" class="tab ctrl-only" data-group="mining" data-tab="mining"><svg viewBox="0 0 24 24"><path d="M12 2 4 7v10l8 5 8-5V7zm0 2.2 5.8 3.6L12 11.6 6.2 7.8zm-6 5.2 5 3.1v6.3L6 16.3zm8 9.4v-6.3l5-3.1v6.3z"/></svg>Mining</button>
+						<button type="button" class="tab ctrl-only" data-group="farming" data-tab="farming"><svg viewBox="0 0 24 24"><path d="M12 2 4 7l8 5 8-5zM4 12l8 5 8-5M4 17l8 5 8-5"/></svg>Farming</button>
+						<button type="button" class="tab ctrl-only" data-group="misc" data-tab="menus"><svg viewBox="0 0 24 24"><path d="M4 5h16v3H4zm0 5.5h16v3H4zM4 16h16v3H4z"/></svg>Misc</button>
+						<button type="button" class="tab ctrl-only" data-group="theme" data-tab="theme"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.3 0-.6-.1-.9A6 6 0 0 1 12 3z"/></svg>Theme</button>
+						<button type="button" class="tab eisen-only on" data-tab="world"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/></svg>World</button>
+						<button type="button" class="tab eisen-only" data-tab="combat"><svg viewBox="0 0 24 24"><path d="M6.5 2 4 6l2 2-6 6 4 4 6-6 2 2 4-2.5L14 8l2-2z"/></svg>Combat</button>
+						<button type="button" class="tab eisen-only" data-tab="visuals"><svg viewBox="0 0 24 24"><path d="M12 5C7 5 2.7 8.1 1 12c1.7 3.9 6 7 11 7s9.3-3.1 11-7c-1.7-3.9-6-7-11-7z"/></svg>Visuals</button>
+						<div class="grp eisen-only">HUD</div>
+						<button type="button" class="tab eisen-only" data-tab="overlay"><svg viewBox="0 0 24 24"><path d="M3 5h18v10H3zM8 17h8v2H8z"/></svg>Overlay</button>
+						<button type="button" class="tab eisen-only" data-tab="bars"><svg viewBox="0 0 24 24"><path d="M4 18h3V9H4zm6.5 0h3V4h-3zM17 18h3v-7h-3z"/></svg>Bars</button>
+						<div class="grp eisen-only">MINING</div>
+						<button type="button" class="tab eisen-only" data-tab="mining"><svg viewBox="0 0 24 24"><path d="M12 2 4 7v10l8 5 8-5V7z"/></svg>Mining</button>
+						<button type="button" class="tab eisen-only" data-tab="nodes"><svg viewBox="0 0 24 24"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9z"/></svg>Nodes</button>
+						<button type="button" class="tab eisen-only" data-tab="farming"><svg viewBox="0 0 24 24"><path d="M12 2 4 7l8 5 8-5zM4 12l8 5 8-5"/></svg>Farming</button>
+						<div class="grp eisen-only">MISC</div>
+						<button type="button" class="tab eisen-only" data-tab="menus"><svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM8 3h8v3H8z"/></svg>Menus</button>
+						<button type="button" class="tab eisen-only" data-tab="status"><svg viewBox="0 0 24 24"><path d="M4 18h16v2H4zM6 10h3v7H6zm5-5h3v12h-3zm5 8h3v4h-3z"/></svg>Status</button>
+						<div class="you eisen-only" id="you" data-tab="player">
 							<div class="face"></div>
 							<span>You</span>
 						</div>
-						<div class="recycle" id="rail-ver">♲</div>
+						<div class="recycle ctrl-only" id="rail-ver">♲</div>
 					</aside>
 					<section class="main">
 						<div class="head">
 							<h2 id="bar-title">World</h2>
+							<nav class="head-tabs ctrl-only" id="head-tabs"></nav>
 							<input class="search" placeholder="Search" spellcheck="false">
-							<button type="button" class="iconbtn" id="theme-btn" title="Theme"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.3 0-.6-.1-.9A6 6 0 0 1 12 3z"/></svg></button>
+							<button type="button" class="iconbtn ctrl-only" title="Notes"><svg viewBox="0 0 24 24"><path d="M12 4a6 6 0 0 0-6 6v3.2L4 16h16l-2-2.8V10a6 6 0 0 0-6-6zm-2 16h4a2 2 0 0 1-4 0z"/></svg></button>
+							<button type="button" class="iconbtn ctrl-only" title="HUD editor"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h10v2H4zm0 5h16v2H4z"/></svg></button>
+							<button type="button" class="iconbtn eisen-only" id="theme-btn" title="Theme"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.3 0-.6-.1-.9A6 6 0 0 1 12 3z"/></svg></button>
+							<button type="button" class="head-face ctrl-only" id="head-face" title="Player"></button>
 						</div>
 						<div class="pane">
 							<canvas id="pane-stars"></canvas>
 							<div class="watermark" id="wm" hidden>EISENMANN</div>
 							<div class="cols on" data-panel="world">
-								<div class="card">
-									<h3>WORLD</h3>
-									<div class="row"><span>World tint</span><button type="button" class="tog on"></button></div>
-									<div class="row"><span>Skybox</span><button type="button" class="tog on"></button></div>
-									<div class="row"><span>Fog</span><button type="button" class="tog"></button></div>
+								<div class="stack">
+									<div class="card">
+										<h3>WORLD TINT</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog on"></button></div>
+										<div class="row"><span>Mode</span><em class="val">Lightmap</em></div>
+										<div class="row"><span>Color</span><span class="dot"></span></div>
+										<div class="slide"><span>Strength</span><div class="bar"><i style="left:70%"></i></div><em>70</em></div>
+									</div>
+									<div class="card">
+										<h3>SKYBOX</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog on"></button></div>
+										<div class="row"><span>Match world</span><button type="button" class="tog on"></button></div>
+										<div class="slide"><span>Strength</span><div class="bar"><i style="left:55%"></i></div><em>55</em></div>
+									</div>
 								</div>
-								<div class="card">
-									<h3>CAMERA</h3>
-									<div class="row"><span>Aspect ratio</span><button type="button" class="tog"></button></div>
-									<div class="row"><span>Native</span><em>100%</em></div>
-									<div class="row"><span>Starfield</span><button type="button" class="tog on"></button></div>
+								<div class="stack">
+									<div class="card">
+										<h3>FOG</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog"></button></div>
+										<div class="row"><span>Match world</span><button type="button" class="tog on"></button></div>
+										<div class="slide"><span>Start</span><div class="bar"><i style="left:20%"></i></div><em>20%</em></div>
+										<div class="slide"><span>End</span><div class="bar"><i style="left:80%"></i></div><em>80%</em></div>
+									</div>
+									<div class="card">
+										<h3>ASPECT RATIO</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog"></button></div>
+										<div class="slide"><span>Aspect</span><div class="bar"><i style="left:71%"></i></div><em>Native</em></div>
+										<div class="chips">
+											<button type="button" class="chip on">Native</button>
+											<button type="button" class="chip">16:10</button>
+											<button type="button" class="chip">4:3</button>
+											<button type="button" class="chip">5:4</button>
+										</div>
+									</div>
 								</div>
 							</div>
 							<div class="cols" data-panel="combat">
@@ -1688,66 +1781,296 @@ const STORE_HTML = `<!DOCTYPE html>
 									<div class="row"><span>Enable</span><button type="button" class="tog on"></button></div>
 									<div class="row"><span>Melee</span><button type="button" class="tog on"></button></div>
 									<div class="row"><span>Arrows</span><button type="button" class="tog on"></button></div>
+									<div class="row"><span>Hitmarker</span><button type="button" class="tog on"></button></div>
+									<div class="slide"><span>Volume</span><div class="bar"><i style="left:80%"></i></div><em>80%</em></div>
+									<div class="slide"><span>Pitch</span><div class="bar"><i style="left:50%"></i></div><em>1.00</em></div>
 								</div>
-								<div class="card">
-									<h3>AUTO CLICKER</h3>
-									<div class="row"><span>Enable</span><button type="button" class="tog on"></button></div>
-									<div class="row"><span>Left</span><span class="bind">[ None ]</span></div>
-									<div class="row"><span>Right</span><span class="bind">[ Button 5 ]</span></div>
-								</div>
-							</div>
-							<div class="cols" data-panel="esp">
-								<div class="card">
-									<h3>GLOW</h3>
-									<div class="row"><span>Mob glow</span><button type="button" class="tog on"></button></div>
-									<div class="row"><span>Player fill</span><button type="button" class="tog on"></button></div>
-									<div class="row"><span>Chest ESP</span><button type="button" class="tog on"></button></div>
-									<div class="row"><span>Held item</span><button type="button" class="tog on"></button></div>
-								</div>
-								<div class="card">
-									<h3>MOBS</h3>
-									<div class="list">
-										<button type="button" class="on">Player</button>
-										<button type="button">Zombie</button>
-										<button type="button">Enderman</button>
-										<button type="button">Blaze</button>
+								<div class="stack">
+									<div class="card">
+										<h3>TRIGGERBOT</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog"></button></div>
+										<div class="row"><span>Players</span><button type="button" class="tog on"></button></div>
+										<div class="slide"><span>Humanize</span><div class="bar"><i style="left:35%"></i></div><em>35%</em></div>
+									</div>
+									<div class="card">
+										<h3>AUTO CLICKER</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog on"></button></div>
+										<div class="row"><span>Whitelist only</span><button type="button" class="tog"></button></div>
+										<div class="row"><span>Terminator only</span><button type="button" class="tog"></button></div>
+										<div class="row"><span>Left</span><button type="button" class="bind">[ None ]</button></div>
+										<div class="row"><span>Right</span><button type="button" class="bind">[ Button 5 ]</button></div>
 									</div>
 								</div>
 							</div>
-							<div class="cols one" data-panel="hud">
+							<div class="cols" data-panel="visuals">
+								<div class="stack">
+									<div class="card">
+										<h3>MOB GLOW</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog on"></button></div>
+										<div class="row"><span>Through walls</span><button type="button" class="tog on"></button></div>
+										<div class="row"><span>Color</span><span class="dot"></span></div>
+									</div>
+									<div class="card">
+										<h3>BLOCK OUTLINE</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog"></button></div>
+										<div class="row"><span>Color</span><span class="dot"></span></div>
+									</div>
+									<div class="card">
+										<h3>CHEST ESP</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog on"></button></div>
+										<div class="row"><span>Tracers</span><button type="button" class="tog"></button></div>
+										<div class="row"><span>Chest Aim</span><button type="button" class="bind">[ None ]</button></div>
+									</div>
+									<div class="card">
+										<h3>HELD ITEM</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog on"></button></div>
+										<div class="row"><span>Style</span><em class="val">Glow</em></div>
+										<div class="row"><span>Color</span><span class="dot"></span></div>
+									</div>
+								</div>
+								<div class="stack">
+									<div class="card">
+										<h3>PLAYER FILL</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog on"></button></div>
+									</div>
+									<div class="card">
+										<h3>NAMETAGS</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog on"></button></div>
+										<div class="row"><span>Own nametag</span><button type="button" class="tog"></button></div>
+										<div class="row"><span>Through walls</span><button type="button" class="tog on"></button></div>
+										<div class="row"><span>Show distance</span><button type="button" class="tog"></button></div>
+									</div>
+									<div class="card">
+										<h3>MOBS</h3>
+										<input class="field" placeholder="Search mobs..." spellcheck="false">
+										<div class="list">
+											<button type="button" class="on">Player</button>
+											<button type="button">Zombie</button>
+											<button type="button">Enderman</button>
+											<button type="button">Blaze</button>
+											<button type="button">Creeper</button>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="cols" data-panel="overlay">
+								<div class="stack">
+									<div class="card">
+										<h3>WATERMARK</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog on"></button></div>
+										<div class="row"><span>FPS</span><button type="button" class="tog on"></button></div>
+										<div class="row"><span>Ping</span><button type="button" class="tog on"></button></div>
+										<div class="row"><span>Clock</span><button type="button" class="tog"></button></div>
+										<div class="row"><span>Name</span><button type="button" class="tog"></button></div>
+									</div>
+									<div class="card">
+										<h3>RAW MATS</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog"></button></div>
+										<div class="row"><span>Materials</span><em class="val">Compact</em></div>
+									</div>
+									<div class="card">
+										<h3>PICKUP LOG</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog"></button></div>
+									</div>
+								</div>
+								<div class="stack">
+									<div class="card">
+										<h3>MUSIC</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog on"></button></div>
+										<div class="row"><span>Hide when idle</span><button type="button" class="tog on"></button></div>
+										<div class="row"><span>Spotify</span><button type="button" class="tog on"></button></div>
+									</div>
+									<div class="card">
+										<h3>INVENTORY HUD</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog"></button></div>
+										<div class="row"><span>Hotbar</span><button type="button" class="tog on"></button></div>
+										<div class="row"><span>Armor</span><button type="button" class="tog on"></button></div>
+										<div class="row"><span>Item count</span><button type="button" class="tog on"></button></div>
+									</div>
+								</div>
+							</div>
+							<div class="cols" data-panel="bars">
 								<div class="card">
-									<h3>OVERLAY</h3>
-									<div class="row"><span>Watermark</span><button type="button" class="tog on"></button></div>
-									<div class="row"><span>Music</span><button type="button" class="tog on"></button></div>
-									<div class="row"><span>Raw mats</span><button type="button" class="tog"></button></div>
-									<div class="row"><span>Inventory HUD</span><button type="button" class="tog"></button></div>
+									<h3>BARS</h3>
+									<div class="row"><span>Hotbar</span><button type="button" class="tog on"></button></div>
+									<div class="row"><span>Health</span><button type="button" class="tog on"></button></div>
+									<div class="row"><span>Hunger</span><button type="button" class="tog on"></button></div>
+									<div class="row"><span>Armor</span><button type="button" class="tog on"></button></div>
+									<div class="row"><span>Air</span><button type="button" class="tog on"></button></div>
+									<div class="row"><span>Experience</span><button type="button" class="tog on"></button></div>
+									<div class="row"><span>Mount health</span><button type="button" class="tog on"></button></div>
+								</div>
+								<div class="card">
+									<h3>INFO</h3>
+									<div class="row"><span>Scoreboard</span><button type="button" class="tog on"></button></div>
+									<div class="row"><span>Boss bar</span><button type="button" class="tog on"></button></div>
+									<div class="row"><span>Effects</span><button type="button" class="tog on"></button></div>
+									<div class="row"><span>Held item</span><button type="button" class="tog on"></button></div>
+									<p class="hint">Move and scale each piece from the toolbar HUD editor.</p>
 								</div>
 							</div>
 							<div class="cols" data-panel="mining">
-								<div class="card">
-									<h3>MINING</h3>
-									<div class="row"><span>Mining HUD</span><button type="button" class="tog on"></button></div>
-									<div class="row"><span>Titanium ESP</span><button type="button" class="tog"></button></div>
-									<div class="row"><span>Chest Aim</span><span class="bind">[ None ]</span></div>
+								<div class="stack">
+									<div class="card">
+										<h3>MINING HUD</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog on"></button></div>
+										<div class="row"><span>Ability alert</span><button type="button" class="tog on"></button></div>
+									</div>
+									<div class="card">
+										<h3>TITANIUM ESP</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog"></button></div>
+										<div class="row"><span>Through walls</span><button type="button" class="tog on"></button></div>
+										<div class="slide"><span>Range</span><div class="bar"><i style="left:40%"></i></div><em>48m</em></div>
+									</div>
 								</div>
 								<div class="card">
 									<h3>LIVE</h3>
-									<div class="row"><span>Pickobulus</span><em>Ready</em></div>
-									<div class="row"><span>Commissions</span><em>2</em></div>
-									<div class="row"><span>The End</span><em>ON</em></div>
+									<div class="row"><span>Pickobulus</span><em class="val">Ready</em></div>
+									<div class="row"><span>Commissions</span><em>2 commissions</em></div>
+									<div class="row"><span>Titanium</span><em>No titanium job</em></div>
 								</div>
 							</div>
-							<div class="cols one" data-panel="player">
+							<div class="cols" data-panel="nodes">
+								<div class="card">
+									<h3>MARKERS</h3>
+									<div class="row"><span>Enable</span><button type="button" class="tog on"></button></div>
+									<div class="row"><span>Node HUD</span><button type="button" class="tog on"></button></div>
+									<div class="row"><span>Only in The End</span><button type="button" class="tog on"></button></div>
+									<div class="row"><span>Force enable</span><button type="button" class="tog"></button></div>
+									<div class="slide"><span>Scan radius</span><div class="bar"><i style="left:50%"></i></div><em>48m</em></div>
+									<div class="row"><span>Particle hints</span><button type="button" class="tog"></button></div>
+								</div>
+								<div class="card">
+									<h3>NODE ESP</h3>
+									<div class="row"><span>Enable</span><button type="button" class="tog on"></button></div>
+									<div class="row"><span>Outline</span><button type="button" class="tog on"></button></div>
+									<div class="row"><span>Tracer</span><button type="button" class="tog"></button></div>
+									<div class="row"><span>Through walls</span><button type="button" class="tog on"></button></div>
+									<div class="row"><span>Color</span><span class="dot"></span></div>
+								</div>
+							</div>
+							<div class="cols" data-panel="farming">
+								<div class="stack">
+									<div class="card">
+										<h3>YAW / PITCH</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog on"></button></div>
+										<div class="slide"><span>Scale</span><div class="bar"><i style="left:33%"></i></div><em>100%</em></div>
+									</div>
+									<div class="card">
+										<h3>JACOB CONTEST HUD</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog on"></button></div>
+									</div>
+								</div>
+								<div class="card">
+									<h3>CONTEST</h3>
+									<p class="hint">No active Jacob contest</p>
+									<p class="hint">Reads the live player-list widget</p>
+								</div>
+							</div>
+							<div class="cols" data-panel="menus">
+								<div class="stack">
+									<div class="card">
+										<h3>MENUS</h3>
+										<div class="row"><span>Loadouts menu</span><button type="button" class="tog on"></button></div>
+										<div class="row"><span>Wardrobe menu</span><button type="button" class="tog on"></button></div>
+										<div class="row"><span>Open animation</span><button type="button" class="tog on"></button></div>
+									</div>
+									<div class="card">
+										<h3>AUTO EXPERIMENTS</h3>
+										<div class="row"><span>Enable</span><button type="button" class="tog"></button></div>
+										<div class="slide"><span>Click delay</span><div class="bar"><i style="left:15%"></i></div><em>250ms</em></div>
+										<div class="row"><span>Auto close</span><button type="button" class="tog on"></button></div>
+										<div class="row"><span>Get max XP</span><button type="button" class="tog"></button></div>
+									</div>
+								</div>
+								<div class="stack">
+									<div class="card">
+										<h3>KEYBINDS</h3>
+										<div class="row"><span>Open menu</span><button type="button" class="bind">[ RShift ]</button></div>
+										<div class="row"><span>Loadouts</span><button type="button" class="bind">[ None ]</button></div>
+										<div class="row"><span>Wardrobe</span><button type="button" class="bind">[ None ]</button></div>
+									</div>
+									<div class="card">
+										<h3>COMMANDS</h3>
+										<p class="hint">/loadouts  /ld</p>
+										<p class="hint">/wardrobe  /wd</p>
+										<p class="hint">/autoclicker add left</p>
+										<p class="hint">1-9 equips and closes</p>
+									</div>
+								</div>
+							</div>
+							<div class="cols" data-panel="status">
+								<div class="card">
+									<h3>LOCATION</h3>
+									<div class="row"><span>Hypixel</span><em class="val">ON</em></div>
+									<div class="row"><span>Skyblock</span><em class="val">ON</em></div>
+									<div class="row"><span>The End</span><em>OFF</em></div>
+									<p class="hint">Hub</p>
+								</div>
+								<div class="card">
+									<h3>CLIENT</h3>
+									<div class="row"><span>FPS</span><em>144</em></div>
+									<div class="row"><span>Ping</span><em>32ms</em></div>
+								</div>
+							</div>
+							<div class="cols" data-panel="player">
 								<div class="card">
 									<h3>YOU</h3>
 									<div class="skin"></div>
-									<div class="row"><span>Replace my name</span><button type="button" class="tog"></button></div>
-									<input class="nick" value="You" maxlength="16" spellcheck="false">
+									<p class="hint">Drag to rotate</p>
+								</div>
+								<div class="stack">
+									<div class="card">
+										<h3>NICK</h3>
+										<div class="row"><span>Replace my name</span><button type="button" class="tog"></button></div>
+										<p class="hint">Chat, tab, scoreboard. Use &amp;6 &amp;l.</p>
+										<input class="nick" value="You" maxlength="16" spellcheck="false">
+									</div>
+									<div class="card">
+										<h3>CAPE</h3>
+										<p class="hint">Message @evilkitten911 to unlock</p>
+										<input class="field" placeholder="https://...png" spellcheck="false">
+										<button type="button" class="filebtn">Local file...</button>
+										<button type="button" class="filebtn">Create cape...</button>
+										<button type="button" class="filebtn">Remove cape</button>
+									</div>
 								</div>
 							</div>
-							<div class="sheet" id="theme">
+							<div class="cols" data-panel="theme">
+								<div class="card">
+									<h3>CONTROL</h3>
+									<div class="row"><span>GUI</span><em class="val" id="gui-label">Control</em></div>
+									<div class="row"><span>Glass</span><span class="dot"></span></div>
+									<div class="row"><span>Pills</span><span class="dot"></span></div>
+									<div class="slide"><span>Frost</span><div class="bar"><i style="left:70%"></i></div><em>70%</em></div>
+									<div class="row"><span>Menu stars</span><button type="button" class="tog on"></button></div>
+									<div class="row"><span>Animations</span><button type="button" class="tog on"></button></div>
+									<div class="row"><span>Auto update</span><button type="button" class="tog on"></button></div>
+								</div>
+								<div class="stack">
+									<div class="card">
+										<h3>ACCENT</h3>
+										<p class="hint">Preset</p>
+										<div class="swatches" id="swatches"></div>
+										<div class="row"><span>Custom</span><span class="dot"></span></div>
+										<div class="slide"><span>HUD</span><div class="bar"><i style="left:80%"></i></div><em>80%</em></div>
+										<div class="row"><span>HUD stars</span><button type="button" class="tog"></button></div>
+									</div>
+									<div class="card">
+										<h3>SCALE</h3>
+										<p class="hint">Menu</p>
+										<div class="chips">
+											<button type="button" class="chip on">100%</button>
+											<button type="button" class="chip">90%</button>
+											<button type="button" class="chip">75%</button>
+											<button type="button" class="chip">50%</button>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="sheet eisen-only" id="theme">
 								<h3>ACCENT</h3>
-								<div class="swatches" id="swatches"></div>
+								<div class="swatches" id="eisen-swatches"></div>
 							</div>
 						</div>
 					</section>
@@ -1762,11 +2085,11 @@ const STORE_HTML = `<!DOCTYPE html>
 				<article class="feat"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/></svg><b>World</b><span>Terrain tint, skybox, fog, and aspect without touching shaders.</span></article>
 				<article class="feat"><svg viewBox="0 0 24 24"><path d="M6.5 2 4 6l2 2-6 6 4 4 6-6 2 2 4-2.5L14 8l2-2z"/></svg><b>Combat</b><span>Hitsounds, triggerbot, Terminator CPS, and in-menu clicker binds.</span></article>
 				<article class="feat"><svg viewBox="0 0 24 24"><path d="M12 5C7 5 2.7 8.1 1 12c1.7 3.9 6 7 11 7s9.3-3.1 11-7c-1.7-3.9-6-7-11-7z"/></svg><b>Visuals</b><span>Mob glow, player fill, chest ESP, held-item shader, and nametag filters.</span></article>
-				<article class="feat"><svg viewBox="0 0 24 24"><path d="M3 5h18v10H3zM8 17h8v2H8z"/></svg><b>HUD</b><span>Watermark, Spotify, raw mats, restyled bars, and a live editor.</span></article>
-				<article class="feat"><svg viewBox="0 0 24 24"><path d="M12 2 4 7v10l8 5 8-5V7z"/></svg><b>Mining</b><span>Commission HUD, titanium ESP, and hold-to-aim lockboxes.</span></article>
+				<article class="feat"><svg viewBox="0 0 24 24"><path d="M3 5h18v10H3zM8 17h8v2H8z"/></svg><b>HUD</b><span>Overlay and Bars: watermark, Spotify, raw mats, and a live HUD editor.</span></article>
+				<article class="feat"><svg viewBox="0 0 24 24"><path d="M12 2 4 7v10l8 5 8-5V7z"/></svg><b>Mining</b><span>Commission HUD, titanium ESP, and End node markers on a second tab.</span></article>
 				<article class="feat"><svg viewBox="0 0 24 24"><path d="M12 2 4 7l8 5 8-5zM4 12l8 5 8-5"/></svg><b>Farming</b><span>Yaw / pitch overlay and a Jacob contest tracker on the tab list.</span></article>
 				<article class="feat"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-3 0-8 1.5-8 4.5V21h16v-2.5C20 15.5 15 14 12 14z"/></svg><b>You</b><span>Nick, custom capes, and head tags other Eisenmann users see.</span></article>
-				<article class="feat"><svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM8 3h8v3H8z"/></svg><b>Menus</b><span>Loadouts, wardrobe, auto experiments, and keybinds set in Misc.</span></article>
+				<article class="feat"><svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM8 3h8v3H8z"/></svg><b>Misc</b><span>Loadouts, wardrobe, auto experiments, keybinds, and a Status tab.</span></article>
 			</div>
 		</section>
 
@@ -1893,7 +2216,7 @@ const STORE_HTML = `<!DOCTYPE html>
 			function apply(data) {
 				ver.textContent = "v" + data.version;
 				menuVer.textContent = "v" + data.version;
-				railVer.textContent = "♲  v" + data.version;
+				railVer.textContent = "♲\nv" + data.version;
 				stat.textContent = data.version;
 				for (var i = 0; i < links.length; i++) {
 					links[i].classList.remove("dead");
@@ -1913,8 +2236,27 @@ const STORE_HTML = `<!DOCTYPE html>
 			next(0);
 		})();
 		(function menu() {
-			var titles = { world: "World", combat: "Combat", esp: "Visuals", hud: "HUD", mining: "Mining", player: "Player" };
-			var tabs = document.querySelectorAll(".tab, #you");
+			var GROUPS = {
+				world: [{ id: "world", label: "World" }],
+				combat: [{ id: "combat", label: "Combat" }],
+				visuals: [{ id: "visuals", label: "Visuals" }],
+				hud: [{ id: "overlay", label: "Overlay" }, { id: "bars", label: "Bars" }],
+				mining: [{ id: "mining", label: "Mining" }, { id: "nodes", label: "Nodes" }],
+				farming: [{ id: "farming", label: "Farming" }],
+				misc: [{ id: "menus", label: "Menus" }, { id: "status", label: "Status" }],
+				theme: [{ id: "theme", label: "Theme" }],
+				player: [{ id: "player", label: "Player" }]
+			};
+			var TAB_GROUP = {};
+			Object.keys(GROUPS).forEach(function (g) {
+				GROUPS[g].forEach(function (t) { TAB_GROUP[t.id] = g; });
+			});
+			var titles = {
+				world: "World", combat: "Combat", visuals: "Visuals", overlay: "Overlay", bars: "Bars",
+				mining: "Mining", nodes: "Nodes", farming: "Farming", menus: "Menus", status: "Status",
+				player: "Player", theme: "Theme"
+			};
+			var current = "world";
 			var panels = document.querySelectorAll(".cols");
 			var title = document.getElementById("bar-title");
 			var theme = document.getElementById("theme");
@@ -1922,8 +2264,14 @@ const STORE_HTML = `<!DOCTYPE html>
 			var pill = document.getElementById("nav-pill");
 			var box = document.getElementById("menu");
 			var wm = document.getElementById("wm");
+			var headTabs = document.getElementById("head-tabs");
+			var headFace = document.getElementById("head-face");
+			var you = document.getElementById("you");
+			var guiLabel = document.getElementById("gui-label");
+			var binds = ["[ None ]", "[ RShift ]", "[ Button 5 ]", "[ Mouse 4 ]"];
 			var colors = ["#2fb5ff", "#4d8dff", "#a78bfa", "#f472b6", "#fb7185", "#fb923c", "#34d399", "#e5e7eb"];
 			function paintSwatches(wrap) {
+				if (!wrap) return;
 				colors.forEach(function (hex, i) {
 					var b = document.createElement("button");
 					b.type = "button";
@@ -1943,49 +2291,108 @@ const STORE_HTML = `<!DOCTYPE html>
 				});
 			}
 			paintSwatches(document.getElementById("swatches"));
+			paintSwatches(document.getElementById("eisen-swatches"));
 			paintSwatches(document.getElementById("hero-swatches"));
+			function eisenMode() {
+				return document.body.classList.contains("eisen");
+			}
+			function activeRail() {
+				if (eisenMode()) {
+					if (current === "player") return you;
+					return document.querySelector(".tab.eisen-only.on");
+				}
+				return document.querySelector(".tab.ctrl-only.on");
+			}
 			function movePill(el) {
-				if (!el || el.id === "you") { pill.classList.add("hide"); return; }
+				if (!el || el.id === "you" || current === "player") {
+					pill.classList.add("hide");
+					return;
+				}
 				pill.classList.remove("hide");
 				pill.style.top = el.offsetTop + "px";
 				pill.style.height = el.offsetHeight + "px";
 			}
-			function show(name) {
-				var active = null;
+			function paintHead(name) {
+				var group = TAB_GROUP[name];
+				var tabs = GROUPS[group] || [];
+				headTabs.innerHTML = "";
 				tabs.forEach(function (t) {
-					var on = t.getAttribute("data-tab") === name;
-					t.classList.toggle("on", on);
-					if (on) active = t;
+					var b = document.createElement("button");
+					b.type = "button";
+					b.className = "head-tab" + (t.id === name ? " on" : "");
+					b.textContent = t.label;
+					b.onclick = function () { show(t.id); };
+					headTabs.appendChild(b);
 				});
+			}
+			function show(name) {
+				current = name;
+				var group = TAB_GROUP[name];
+				document.querySelectorAll(".tab.ctrl-only").forEach(function (t) {
+					t.classList.toggle("on", t.getAttribute("data-group") === group && group !== "player");
+				});
+				document.querySelectorAll(".tab.eisen-only").forEach(function (t) {
+					t.classList.toggle("on", t.getAttribute("data-tab") === name);
+				});
+				you.classList.toggle("on", name === "player");
+				headFace.classList.toggle("on", name === "player");
 				panels.forEach(function (p) { p.classList.toggle("on", p.getAttribute("data-panel") === name); });
 				title.textContent = titles[name] || name;
-				wm.hidden = name !== "hud";
-				theme.classList.remove("on");
-				themeBtn.classList.remove("on");
 				title.replaceWith(title.cloneNode(true));
 				title = document.getElementById("bar-title");
-				movePill(active);
+				wm.hidden = name !== "overlay";
+				theme.classList.remove("on");
+				themeBtn.classList.remove("on");
+				paintHead(name);
+				requestAnimationFrame(function () { movePill(activeRail()); });
 			}
-			tabs.forEach(function (t) { t.onclick = function () { show(t.getAttribute("data-tab")); }; });
+			function openGroup(group) {
+				if (TAB_GROUP[current] === group) return;
+				show(GROUPS[group][0].id);
+			}
+			document.querySelectorAll(".tab.ctrl-only").forEach(function (t) {
+				t.onclick = function () { openGroup(t.getAttribute("data-group")); };
+			});
+			document.querySelectorAll(".tab.eisen-only").forEach(function (t) {
+				t.onclick = function () { show(t.getAttribute("data-tab")); };
+			});
+			you.onclick = function () { show("player"); };
+			headFace.onclick = function () { show("player"); };
 			themeBtn.onclick = function () { theme.classList.toggle("on"); themeBtn.classList.toggle("on"); };
 			box.addEventListener("click", function (e) {
 				var tog = e.target.closest(".tog");
 				if (tog) tog.classList.toggle("on");
 				var row = e.target.closest(".list button");
 				if (row) row.classList.toggle("on");
+				var chip = e.target.closest(".chip");
+				if (chip && chip.parentNode) {
+					chip.parentNode.querySelectorAll(".chip").forEach(function (x) { x.classList.toggle("on", x === chip); });
+				}
+				var bind = e.target.closest(".bind");
+				if (bind) {
+					var i = binds.indexOf(bind.textContent.trim());
+					bind.textContent = binds[(i + 1) % binds.length];
+				}
 			});
 			document.querySelector(".nick").oninput = function () {
-				document.querySelector(".you span").textContent = this.value.trim() || "You";
+				you.querySelector("span").textContent = this.value.trim() || "You";
 			};
 			document.getElementById("mode").onclick = function (e) {
 				var b = e.target.closest("button");
 				if (!b) return;
 				document.querySelectorAll("#mode button").forEach(function (x) { x.classList.toggle("on", x === b); });
-				document.body.classList.toggle("eisen", b.getAttribute("data-mode") === "eisen");
-				document.body.classList.toggle("ctrl", b.getAttribute("data-mode") === "ctrl");
-				movePill(document.querySelector(".tab.on"));
+				var eisen = b.getAttribute("data-mode") === "eisen";
+				document.body.classList.toggle("eisen", eisen);
+				document.body.classList.toggle("ctrl", !eisen);
+				if (guiLabel) guiLabel.textContent = eisen ? "Eisenmann" : "Control";
+				if (eisen && current === "theme") show("world");
+				else {
+					paintHead(current);
+					requestAnimationFrame(function () { movePill(activeRail()); });
+				}
 			};
-			movePill(document.querySelector(".tab.on"));
+			paintHead(current);
+			movePill(activeRail());
 			requestAnimationFrame(function () { box.classList.add("in"); });
 			var c = document.getElementById("pane-stars");
 			var ctx = c.getContext("2d");
@@ -2015,7 +2422,6 @@ const STORE_HTML = `<!DOCTYPE html>
 </body>
 </html>
 `;
-
 const LOGIN_HTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
