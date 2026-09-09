@@ -1,4 +1,4 @@
-window.EisenmannCapeCrop = (function () {
+window.StrayCapeCrop = (function () {
 	var ASPECT = 10 / 16;
 	var FACE_W = 10;
 	var FACE_H = 16;

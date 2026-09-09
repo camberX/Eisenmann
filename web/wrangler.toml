@@ -8,7 +8,7 @@ binding = "ASSETS"
 run_worker_first = true
 
 [vars]
-TITLE = "EISENMANN Capes"
+TITLE = "STRAY Capes"
 MOD_GITHUB = "camberX/Eisenmann"
 MOD_GITHUB_BRANCH = "main"
 MOD_GITHUB_PATH = "web/public/mod"

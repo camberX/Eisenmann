@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>EISENMANN Admin</title>
+	<title>STRAY Admin</title>
 	<meta name="theme-color" content="#05070d">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@500;700;800&display=swap" rel="stylesheet">
@@ -64,7 +64,7 @@
 	<div class="grain"></div>
 	<main>
 		<div class="kicker">Restricted</div>
-		<h1>EISENMANN</h1>
+		<h1>STRAY</h1>
 		<div class="tick"></div>
 		<p>Enter the Worker admin secret to open the cape desk.</p>
 		<label for="admin">Admin key</label>
@@ -107,7 +107,7 @@
 		const admin = document.getElementById("admin");
 		const status = document.getElementById("status");
 		const go = document.getElementById("go");
-		admin.value = sessionStorage.getItem("voidmark-admin") || "";
+		admin.value = sessionStorage.getItem("stray-admin") || "";
 		async function enter() {
 			const key = admin.value.trim();
 			status.textContent = "Checking…";
@@ -121,10 +121,10 @@
 				});
 				const data = await response.json();
 				if (!response.ok) throw new Error(data.error || "Bad admin key");
-				sessionStorage.setItem("voidmark-admin", key);
+				sessionStorage.setItem("stray-admin", key);
 				location.href = "/manage";
 			} catch (error) {
-				sessionStorage.removeItem("voidmark-admin");
+				sessionStorage.removeItem("stray-admin");
 				status.className = "status err";
 				status.textContent = error.message;
 			} finally {

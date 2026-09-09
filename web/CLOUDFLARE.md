@@ -1,6 +1,6 @@
 # Host the cape shop on Cloudflare (free)
 
-This puts the UUID list and cape files on Cloudflare Workers + R2. You are not running a VPS. The free tier is enough for Eisenmann: 10 GB of PNGs, no bandwidth bill.
+This puts the UUID list and cape files on Cloudflare Workers + R2. You are not running a VPS. The free tier is enough for Stray: 10 GB of PNGs, no bandwidth bill.
 
 **R2 asks for a card even on the free plan.** That is verification, not a charge. Stay under the free limits and the bill is $0. After you add a card, set a spending cap (step 9 in the CLI path).
 
@@ -12,14 +12,14 @@ Origin has no Download ZIP. Do not type your Google password into Git.
 
 1. Cloudflare → **Workers & Pages** (Compute) → **Create** → start from a Hello World Worker.
 2. Name it `voidmark-capes`. Deploy once so it exists.
-3. **Edit code**. Delete the sample. On [the Eisenmann codebase](https://github.com/camberX/Eisenmann) open `web/worker.js`, copy the whole file, paste it into the Worker editor. **Deploy**.
+3. **Edit code**. Delete the sample. On [the Stray codebase](https://github.com/camberX/Eisenmann) open `web/worker.js`, copy the whole file, paste it into the Worker editor. **Deploy**.
 4. Worker **Settings** → **Bindings** → **R2** → Add. Variable name must be `CAPES`. Bucket: `voidmark-capes`. Save.
 5. Worker **Settings** → **Variables and Secrets**:
    - `ADMIN` → Encrypt / Secret. Paste a long random string and save it in a password manager.
    - `SPOTIFY_CLIENT_ID` → Text. Public Spotify app client ID. Redirect URI on that app must be `http://127.0.0.1:43821/callback`. The shop exposes it at `/api/spotify`. The mod also reads `web/public/spotify.json` from GitHub, so a Worker deploy is not required for friends to log in.
 6. Deploy again if it asks.
-7. Open the Worker URL (`https://eisenmann.lol` or the `workers.dev` URL). The public shop is `/`, with a download of the latest jar at `/download`. Admin login is `/admin`. After the key is accepted, the Worker sets an HttpOnly cookie and then serves the cape desk at `/manage`. `/manage` is not sent at all without that cookie, and every desk API (list, whitelist, tags, capes, bans) also requires that cookie plus the admin key — hiding the page in the browser is not the lock. That desk is players, bulk add, notes, cooldown reset, cape upload, and fake ban.
-8. The shipped mod always uses `https://eisenmann.lol`. Attach that custom domain to this Worker (Workers & Pages → `voidmark-capes` → Settings → Domains & Routes). Restart Minecraft after a domain change.
+7. Open the Worker URL (`https://stray.gay` or the `workers.dev` URL). The public shop is `/`, with a download of the latest jar at `/download`. Admin login is `/admin`. After the key is accepted, the Worker sets an HttpOnly cookie and then serves the cape desk at `/manage`. `/manage` is not sent at all without that cookie, and every desk API (list, whitelist, tags, capes, bans) also requires that cookie plus the admin key — hiding the page in the browser is not the lock. That desk is players, bulk add, notes, cooldown reset, cape upload, and fake ban.
+8. The shipped mod always uses `https://stray.gay`. Attach that custom domain to this Worker (Workers & Pages → `voidmark-capes` → Settings → Domains & Routes). Restart Minecraft after a domain change.
 
 ## 0. What you need (CLI path)
 
@@ -85,20 +85,20 @@ Open it. You should see the cape landing page (message @evilkitten911 on Discord
 
 If deploy fails with a bucket error, the bucket name in the dashboard does not match `voidmark-capes`. Rename it or change `bucket_name` in `wrangler.toml` to match.
 
-## 6. Point Eisenmann at that URL
+## 6. Point Stray at that URL
 
-The jar is hardcoded to `https://eisenmann.lol`. There is no `capeServerUrl` in `.minecraft/config/voidmark.json`. Launch drops that key if an older config still has it.
+The jar is hardcoded to `https://stray.gay`. There is no `capeServerUrl` in `.minecraft/config/stray.json`. Launch drops that key if an older config still has it.
 
-Attach `eisenmann.lol` to the Worker (Settings → Domains & Routes). The `workers.dev` URL still works in a browser for the admin list if you want it.
+Attach `stray.gay` to the Worker (Settings → Domains & Routes). The `workers.dev` URL still works in a browser for the admin list if you want it.
 
 ## 7. After someone messages on Discord
 
 1. They message **@evilkitten911** with their Minecraft name.
-2. Open `https://eisenmann.lol/admin` (or your Worker `/admin`), enter the admin key, and you land on the cape desk. Visiting `/manage` without logging in redirects to the login page and does not include the desk HTML.
+2. Open `https://stray.gay/admin` (or your Worker `/admin`), enter the admin key, and you land on the cape desk. Visiting `/manage` without logging in redirects to the login page and does not include the desk HTML.
 3. Type their username or UUID and click **Add**, or use Bulk add. You should see their current name, skin, and cape.
 4. Click a player to change cape, head tag, note, bypass, or reset the 24 hour cooldown. **Dewhitelist** drops them.
 
-Capes only show for Eisenmann users.
+Capes only show for Stray users.
 
 ## 8. Check it worked
 
@@ -112,7 +112,7 @@ You should see a title and the Discord handle. After they set a cape in-game:
 curl https://voidmark-capes.YOURNAME.workers.dev/api/cape/THEIR-UUID
 ```
 
-should return `"has":true` and a hash. Changing the cape in the Eisenmann menu overwrites that file; other clients pick it up the next time they join a world.
+should return `"has":true` and a hash. Changing the cape in the Stray menu overwrites that file; other clients pick it up the next time they join a world.
 
 ## 9. Cap the bill (do this once)
 
@@ -122,10 +122,10 @@ should return `"has":true` and a hash. Changing the cape in the Eisenmann menu o
 
 ## Optional: custom domain
 
-The jar always uses `https://eisenmann.lol`, so that hostname must be on the Worker:
+The jar always uses `https://stray.gay`, so that hostname must be on the Worker:
 
 1. Workers & Pages → `voidmark-capes` → **Settings** → **Domains & Routes** → **Add**.
-2. Add `eisenmann.lol`.
+2. Add `stray.gay`.
 
 ## Updating later
 

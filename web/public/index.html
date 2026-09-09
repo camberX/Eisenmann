@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Eisenmann</title>
+	<title>Stray</title>
 	<meta name="description" content="A visuals oriented Hypixel Skyblock mod. Control-glass click GUI, ESP, HUD, mining, and custom capes.">
 	<meta name="theme-color" content="#05070d">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
@@ -133,21 +133,21 @@
 			transition: transform 0.5s var(--ease), opacity 0.36s ease, background 0.25s ease;
 		}
 		.gui.in { opacity: 1; transform: none; }
-		body.eisen .gui {
+		body.classic .gui {
 			grid-template-columns: 168px 1fr;
 			border-radius: 12px;
 			background: var(--pane);
 			box-shadow: 0 28px 70px #0009, inset 0 0 0 1px var(--line);
 			backdrop-filter: none;
 		}
-		body.ctrl .eisen-only { display: none !important; }
-		body.eisen .ctrl-only { display: none !important; }
+		body.ctrl .classic-only { display: none !important; }
+		body.classic .ctrl-only { display: none !important; }
 		.rail {
 			position: relative; display: flex; flex-direction: column; align-items: center;
 			padding: 10px 8px 8px; gap: 0;
 		}
-		body.eisen .rail { align-items: stretch; padding: 16px 0 10px; background: #121820; }
-		body.eisen .rail::after {
+		body.classic .rail { align-items: stretch; padding: 16px 0 10px; background: #121820; }
+		body.classic .rail::after {
 			content: ""; position: absolute; top: 0; right: 0; width: 2px; height: 100%;
 			background: color-mix(in srgb, var(--accent) 38%, transparent);
 		}
@@ -157,7 +157,7 @@
 			transition: top 0.22s var(--ease), height 0.22s var(--ease), opacity 0.16s ease;
 			pointer-events: none; z-index: 0;
 		}
-		body.eisen .rail-pill {
+		body.classic .rail-pill {
 			left: 12px; width: calc(100% - 24px); height: 32px; border-radius: 8px; background: var(--pill);
 		}
 		.rail-pill.hide { opacity: 0; }
@@ -165,12 +165,12 @@
 			position: relative; z-index: 1; font-size: 9px; font-weight: 800; letter-spacing: 0.18em;
 			color: var(--header); padding: 4px 0 10px; display: none;
 		}
-		body.eisen .brand-mini { display: flex; align-items: baseline; gap: 6px; padding: 0 18px 0; font-size: 14px; letter-spacing: 0.04em; color: var(--text); }
-		body.eisen .brand-mini b { color: var(--accent); font-size: 10px; letter-spacing: 0; font-weight: 700; }
-		body.eisen .rail-tick { display: block; }
+		body.classic .brand-mini { display: flex; align-items: baseline; gap: 6px; padding: 0 18px 0; font-size: 14px; letter-spacing: 0.04em; color: var(--text); }
+		body.classic .brand-mini b { color: var(--accent); font-size: 10px; letter-spacing: 0; font-weight: 700; }
+		body.classic .rail-tick { display: block; }
 		.rail-tick { display: none; width: 32px; height: 3px; margin: 7px 18px 10px; background: var(--accent); border-radius: 2px; }
 		.grp { display: none; }
-		body.eisen .grp { display: block; padding: 8px 20px 2px; font-size: 10px; letter-spacing: 0.1em; color: var(--header); font-weight: 700; }
+		body.classic .grp { display: block; padding: 8px 20px 2px; font-size: 10px; letter-spacing: 0.1em; color: var(--header); font-weight: 700; }
 		.tab {
 			position: relative; z-index: 1; width: 72px; height: 48px; border: 0; background: transparent;
 			color: rgba(245,245,247,0.62); cursor: pointer; border-radius: 14px;
@@ -180,15 +180,15 @@
 		.tab svg { width: 16px; height: 16px; fill: currentColor; }
 		.tab.on { color: #f5f5f7; }
 		.tab:hover:not(.on) { color: #fff; }
-		body.eisen .tab {
+		body.classic .tab {
 			width: calc(100% - 24px); height: 32px; margin: 1px 12px; padding: 0 12px;
 			flex-direction: row; justify-content: flex-start; gap: 10px;
 			font: 700 15px/1 "Nunito Sans", sans-serif; color: var(--muted); border-radius: 8px;
 		}
-		body.eisen .tab svg { fill: var(--accent); }
-		body.eisen .tab.on { color: var(--text); }
-		body.eisen .tab.on svg { fill: var(--text); }
-		body.eisen .tab:hover:not(.on) { background: #ffffff14; }
+		body.classic .tab svg { fill: var(--accent); }
+		body.classic .tab.on { color: var(--text); }
+		body.classic .tab.on svg { fill: var(--text); }
+		body.classic .tab:hover:not(.on) { background: #ffffff14; }
 		.you {
 			margin-top: auto; position: relative; z-index: 1; width: auto; padding: 12px 18px 4px;
 			display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px;
@@ -241,7 +241,7 @@
 			background: rgba(0,0,0,0.18); color: var(--text); padding: 0 12px;
 			font: 600 12px/1 "Nunito Sans", sans-serif;
 		}
-		body.eisen .search { background: var(--card); width: 148px; }
+		body.classic .search { background: var(--card); width: 148px; }
 		.iconbtn {
 			width: 26px; height: 26px; border: 0; background: transparent; color: rgba(245,245,247,0.7);
 			padding: 0; cursor: pointer; display: grid; place-items: center; flex: 0 0 auto;
@@ -250,7 +250,7 @@
 		.iconbtn svg { width: 15px; height: 15px; fill: currentColor; }
 		.pane { position: relative; flex: 1; overflow: hidden; }
 		#pane-stars { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; display: none; }
-		body.eisen #pane-stars { display: block; }
+		body.classic #pane-stars { display: block; }
 		.cols {
 			position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
 			padding: 4px 12px 12px; align-content: start; align-items: start;
@@ -265,12 +265,12 @@
 			background: rgba(255,255,255,0.12); border-radius: 16px; padding: 10px 12px 8px;
 			box-shadow: inset 0 1px 0 rgba(255,255,255,0.22);
 		}
-		body.eisen .card { background: var(--card); border-radius: 12px; box-shadow: none; }
+		body.classic .card { background: var(--card); border-radius: 12px; box-shadow: none; }
 		.card h3 {
 			margin: 0 0 6px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.12);
 			font-size: 10px; letter-spacing: 0.1em; color: var(--header); font-weight: 800;
 		}
-		body.eisen .card h3 { border-bottom-color: var(--line); }
+		body.classic .card h3 { border-bottom-color: var(--line); }
 		.row { display: flex; align-items: center; justify-content: space-between; min-height: 26px; gap: 8px; }
 		.row span { font-size: 13px; font-weight: 700; }
 		.row em, .val { font-style: normal; font-size: 12px; color: var(--muted); font-weight: 700; }
@@ -313,9 +313,9 @@
 		}
 		.tog.on { background: var(--accent); }
 		.tog.on::after { left: 21px; }
-		body.eisen .tog { width: 44px; height: 22px; background: var(--track); }
-		body.eisen .tog::after { width: 16px; height: 16px; background: var(--off); box-shadow: none; }
-		body.eisen .tog.on::after { left: 25px; background: #061018; }
+		body.classic .tog { width: 44px; height: 22px; background: var(--track); }
+		body.classic .tog::after { width: 16px; height: 16px; background: var(--off); box-shadow: none; }
+		body.classic .tog.on::after { left: 25px; background: #061018; }
 		.list { display: flex; flex-direction: column; gap: 2px; }
 		.list button {
 			border: 0; background: transparent; color: rgba(245,245,247,0.7);
@@ -416,13 +416,13 @@
 	<div class="wrap">
 		<header class="top">
 			<div class="mark">
-				<div class="word">EISENMANN</div>
+				<div class="word">STRAY</div>
 				<div class="tick"></div>
 			</div>
 			<div class="top-actions">
 				<div class="mode" id="mode">
 					<button type="button" class="on" data-mode="ctrl">Control</button>
-					<button type="button" data-mode="eisen">Eisenmann</button>
+					<button type="button" data-mode="classic">Classic</button>
 				</div>
 				<a class="dl" id="mod-download" href="/download">Download</a>
 				<span class="ver" id="mod-ver"></span>
@@ -447,8 +447,8 @@
 				<div class="gui in" id="menu">
 					<aside class="rail">
 						<div class="rail-pill" id="nav-pill"></div>
-						<div class="brand-mini eisen-only">EISENMANN<b id="menu-ver"></b></div>
-						<div class="rail-tick eisen-only"></div>
+						<div class="brand-mini classic-only">STRAY<b id="menu-ver"></b></div>
+						<div class="rail-tick classic-only"></div>
 						<button type="button" class="tab ctrl-only on" data-group="world" data-tab="world"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.9 9h-3.2a15 15 0 0 0-1.4-6 8 8 0 0 1 4.6 6zM12 4c.8 1.3 1.5 3.4 1.8 6H10.2C10.5 7.4 11.2 5.3 12 4zM4.1 13h3.2c.2 2.2.7 4.2 1.4 6A8 8 0 0 1 4.1 13zM8.7 11H5.1A8 8 0 0 1 9.7 5a15 15 0 0 0-1 6zm1.5 2h3.6c-.3 2.6-1 4.7-1.8 6-.8-1.3-1.5-3.4-1.8-6zm5.1 6c.7-1.8 1.2-3.8 1.4-6h3.2a8 8 0 0 1-4.6 6z"/></svg>World</button>
 						<button type="button" class="tab ctrl-only" data-group="combat" data-tab="combat"><svg viewBox="0 0 24 24"><path d="M6.5 2 4 6l2 2-6 6 4 4 6-6 2 2 4-2.5L14 8l2-2-1-3-3 1-2-2zM16 14l6 6-2 2-6-6z"/></svg>Combat</button>
 						<button type="button" class="tab ctrl-only" data-group="visuals" data-tab="visuals"><svg viewBox="0 0 24 24"><path d="M12 5C7 5 2.7 8.1 1 12c1.7 3.9 6 7 11 7s9.3-3.1 11-7c-1.7-3.9-6-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>Visuals</button>
@@ -457,20 +457,20 @@
 						<button type="button" class="tab ctrl-only" data-group="farming" data-tab="farming"><svg viewBox="0 0 24 24"><path d="M12 2 4 7l8 5 8-5zM4 12l8 5 8-5M4 17l8 5 8-5"/></svg>Farming</button>
 						<button type="button" class="tab ctrl-only" data-group="misc" data-tab="menus"><svg viewBox="0 0 24 24"><path d="M4 5h16v3H4zm0 5.5h16v3H4zM4 16h16v3H4z"/></svg>Misc</button>
 						<button type="button" class="tab ctrl-only" data-group="theme" data-tab="theme"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.3 0-.6-.1-.9A6 6 0 0 1 12 3z"/></svg>Theme</button>
-						<button type="button" class="tab eisen-only on" data-tab="world"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/></svg>World</button>
-						<button type="button" class="tab eisen-only" data-tab="combat"><svg viewBox="0 0 24 24"><path d="M6.5 2 4 6l2 2-6 6 4 4 6-6 2 2 4-2.5L14 8l2-2z"/></svg>Combat</button>
-						<button type="button" class="tab eisen-only" data-tab="visuals"><svg viewBox="0 0 24 24"><path d="M12 5C7 5 2.7 8.1 1 12c1.7 3.9 6 7 11 7s9.3-3.1 11-7c-1.7-3.9-6-7-11-7z"/></svg>Visuals</button>
-						<div class="grp eisen-only">HUD</div>
-						<button type="button" class="tab eisen-only" data-tab="overlay"><svg viewBox="0 0 24 24"><path d="M3 5h18v10H3zM8 17h8v2H8z"/></svg>Overlay</button>
-						<button type="button" class="tab eisen-only" data-tab="bars"><svg viewBox="0 0 24 24"><path d="M4 18h3V9H4zm6.5 0h3V4h-3zM17 18h3v-7h-3z"/></svg>Bars</button>
-						<div class="grp eisen-only">MINING</div>
-						<button type="button" class="tab eisen-only" data-tab="mining"><svg viewBox="0 0 24 24"><path d="M12 2 4 7v10l8 5 8-5V7z"/></svg>Mining</button>
-						<button type="button" class="tab eisen-only" data-tab="nodes"><svg viewBox="0 0 24 24"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9z"/></svg>Nodes</button>
-						<button type="button" class="tab eisen-only" data-tab="farming"><svg viewBox="0 0 24 24"><path d="M12 2 4 7l8 5 8-5zM4 12l8 5 8-5"/></svg>Farming</button>
-						<div class="grp eisen-only">MISC</div>
-						<button type="button" class="tab eisen-only" data-tab="menus"><svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM8 3h8v3H8z"/></svg>Menus</button>
-						<button type="button" class="tab eisen-only" data-tab="status"><svg viewBox="0 0 24 24"><path d="M4 18h16v2H4zM6 10h3v7H6zm5-5h3v12h-3zm5 8h3v4h-3z"/></svg>Status</button>
-						<div class="you eisen-only" id="you" data-tab="player">
+						<button type="button" class="tab classic-only on" data-tab="world"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/></svg>World</button>
+						<button type="button" class="tab classic-only" data-tab="combat"><svg viewBox="0 0 24 24"><path d="M6.5 2 4 6l2 2-6 6 4 4 6-6 2 2 4-2.5L14 8l2-2z"/></svg>Combat</button>
+						<button type="button" class="tab classic-only" data-tab="visuals"><svg viewBox="0 0 24 24"><path d="M12 5C7 5 2.7 8.1 1 12c1.7 3.9 6 7 11 7s9.3-3.1 11-7c-1.7-3.9-6-7-11-7z"/></svg>Visuals</button>
+						<div class="grp classic-only">HUD</div>
+						<button type="button" class="tab classic-only" data-tab="overlay"><svg viewBox="0 0 24 24"><path d="M3 5h18v10H3zM8 17h8v2H8z"/></svg>Overlay</button>
+						<button type="button" class="tab classic-only" data-tab="bars"><svg viewBox="0 0 24 24"><path d="M4 18h3V9H4zm6.5 0h3V4h-3zM17 18h3v-7h-3z"/></svg>Bars</button>
+						<div class="grp classic-only">MINING</div>
+						<button type="button" class="tab classic-only" data-tab="mining"><svg viewBox="0 0 24 24"><path d="M12 2 4 7v10l8 5 8-5V7z"/></svg>Mining</button>
+						<button type="button" class="tab classic-only" data-tab="nodes"><svg viewBox="0 0 24 24"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9z"/></svg>Nodes</button>
+						<button type="button" class="tab classic-only" data-tab="farming"><svg viewBox="0 0 24 24"><path d="M12 2 4 7l8 5 8-5zM4 12l8 5 8-5"/></svg>Farming</button>
+						<div class="grp classic-only">MISC</div>
+						<button type="button" class="tab classic-only" data-tab="menus"><svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM8 3h8v3H8z"/></svg>Menus</button>
+						<button type="button" class="tab classic-only" data-tab="status"><svg viewBox="0 0 24 24"><path d="M4 18h16v2H4zM6 10h3v7H6zm5-5h3v12h-3zm5 8h3v4h-3z"/></svg>Status</button>
+						<div class="you classic-only" id="you" data-tab="player">
 							<div class="face"></div>
 							<span>You</span>
 						</div>
@@ -483,12 +483,12 @@
 							<input class="search" placeholder="Search" spellcheck="false">
 							<button type="button" class="iconbtn ctrl-only" title="Notes"><svg viewBox="0 0 24 24"><path d="M12 4a6 6 0 0 0-6 6v3.2L4 16h16l-2-2.8V10a6 6 0 0 0-6-6zm-2 16h4a2 2 0 0 1-4 0z"/></svg></button>
 							<button type="button" class="iconbtn ctrl-only" title="HUD editor"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h10v2H4zm0 5h16v2H4z"/></svg></button>
-							<button type="button" class="iconbtn eisen-only" id="theme-btn" title="Theme"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.3 0-.6-.1-.9A6 6 0 0 1 12 3z"/></svg></button>
+							<button type="button" class="iconbtn classic-only" id="theme-btn" title="Theme"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.3 0-.6-.1-.9A6 6 0 0 1 12 3z"/></svg></button>
 							<button type="button" class="head-face ctrl-only" id="head-face" title="Player"></button>
 						</div>
 						<div class="pane">
 							<canvas id="pane-stars"></canvas>
-							<div class="watermark" id="wm" hidden>EISENMANN</div>
+							<div class="watermark" id="wm" hidden>STRAY</div>
 							<div class="cols on" data-panel="world">
 								<div class="stack">
 									<div class="card">
@@ -819,9 +819,9 @@
 									</div>
 								</div>
 							</div>
-							<div class="sheet eisen-only" id="theme">
+							<div class="sheet classic-only" id="theme">
 								<h3>ACCENT</h3>
-								<div class="swatches" id="eisen-swatches"></div>
+								<div class="swatches" id="classic-swatches"></div>
 							</div>
 						</div>
 					</section>
@@ -839,7 +839,7 @@
 				<article class="feat"><svg viewBox="0 0 24 24"><path d="M3 5h18v10H3zM8 17h8v2H8z"/></svg><b>HUD</b><span>Overlay and Bars: watermark, Spotify, raw mats, and a live HUD editor.</span></article>
 				<article class="feat"><svg viewBox="0 0 24 24"><path d="M12 2 4 7v10l8 5 8-5V7z"/></svg><b>Mining</b><span>Commission HUD, titanium ESP, and End node markers on a second tab.</span></article>
 				<article class="feat"><svg viewBox="0 0 24 24"><path d="M12 2 4 7l8 5 8-5zM4 12l8 5 8-5"/></svg><b>Farming</b><span>Yaw / pitch overlay and a Jacob contest tracker on the tab list.</span></article>
-				<article class="feat"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-3 0-8 1.5-8 4.5V21h16v-2.5C20 15.5 15 14 12 14z"/></svg><b>You</b><span>Nick, custom capes, and head tags other Eisenmann users see.</span></article>
+				<article class="feat"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-3 0-8 1.5-8 4.5V21h16v-2.5C20 15.5 15 14 12 14z"/></svg><b>You</b><span>Nick, custom capes, and head tags other Stray users see.</span></article>
 				<article class="feat"><svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM8 3h8v3H8z"/></svg><b>Misc</b><span>Loadouts, wardrobe, auto experiments, keybinds, and a Status tab.</span></article>
 			</div>
 		</section>
@@ -851,17 +851,17 @@
 					<span class="handle">@evilkitten911</span>
 					<button type="button" class="copy" id="copy">Copy</button>
 				</div>
-				<p>Message that Discord with your Minecraft name. After you get added, open the Cape card in Eisenmann and crop a photo or paste a PNG. Other Eisenmann users see it when they join a world.</p>
+				<p>Message that Discord with your Minecraft name. After you get added, open the Cape card in Stray and crop a photo or paste a PNG. Other Stray users see it when they join a world.</p>
 			</div>
 			<div class="glass statline">
 				<div><b id="stat-ver">1.2</b><span>Latest build</span></div>
 				<div><b>26.1</b><span>Minecraft</span></div>
 				<div><b>Right Shift</b><span>Open menu</span></div>
-				<div><b>eisenmann.lol</b><span>Always this host</span></div>
+				<div><b>stray.gay</b><span>Always this host</span></div>
 			</div>
 		</section>
 		<div class="foot">
-			<span>eisenmann.lol</span>
+			<span>stray.gay</span>
 			<a href="/admin">Desk</a>
 		</div>
 	</div>
@@ -961,7 +961,7 @@
 			];
 			function fileUrl(data) {
 				if (data.url && data.url.charAt(0) === "/") return data.url;
-				return "https://raw.githubusercontent.com/" + (data.repo || "camberX/Eisenmann") + "/main/web/public/mod/" + (data.file || ("eisenmann-" + data.version + ".jar"));
+				return "https://raw.githubusercontent.com/" + (data.repo || "camberX/Eisenmann") + "/main/web/public/mod/" + (data.file || ("stray-" + data.version + ".jar"));
 			}
 			function apply(data) {
 				ver.textContent = "v" + data.version;
@@ -971,7 +971,7 @@
 				stat.textContent = data.version;
 				for (var i = 0; i < links.length; i++) {
 					links[i].classList.remove("dead");
-					links[i].setAttribute("download", data.file || ("eisenmann-" + data.version + ".jar"));
+					links[i].setAttribute("download", data.file || ("stray-" + data.version + ".jar"));
 					links[i].href = fileUrl(data);
 				}
 			}
@@ -1045,25 +1045,25 @@
 				});
 			}
 			paintSwatches(document.getElementById("swatches"));
-			paintSwatches(document.getElementById("eisen-swatches"));
+			paintSwatches(document.getElementById("classic-swatches"));
 			paintSwatches(document.getElementById("hero-swatches"));
-			function eisenMode() {
-				return document.body.classList.contains("eisen");
+			function classicMode() {
+				return document.body.classList.contains("classic");
 			}
-			function setMode(eisen) {
-				document.body.classList.toggle("eisen", eisen);
-				document.body.classList.toggle("ctrl", !eisen);
+			function setMode(classic) {
+				document.body.classList.toggle("classic", classic);
+				document.body.classList.toggle("ctrl", !classic);
 				if (mode) {
 					mode.querySelectorAll("button").forEach(function (x) {
-						x.classList.toggle("on", (x.getAttribute("data-mode") === "eisen") === eisen);
+						x.classList.toggle("on", (x.getAttribute("data-mode") === "classic") === classic);
 					});
 				}
-				if (guiLabel) guiLabel.textContent = eisen ? "Eisenmann" : "Control";
+				if (guiLabel) guiLabel.textContent = classic ? "Classic" : "Control";
 			}
 			function activeRail() {
-				if (eisenMode()) {
+				if (classicMode()) {
 					if (current === "player") return you;
-					return document.querySelector(".tab.eisen-only.on");
+					return document.querySelector(".tab.classic-only.on");
 				}
 				return document.querySelector(".tab.ctrl-only.on");
 			}
@@ -1097,7 +1097,7 @@
 				document.querySelectorAll(".tab.ctrl-only").forEach(function (t) {
 					t.classList.toggle("on", t.getAttribute("data-group") === group && group !== "player");
 				});
-				document.querySelectorAll(".tab.eisen-only").forEach(function (t) {
+				document.querySelectorAll(".tab.classic-only").forEach(function (t) {
 					t.classList.toggle("on", t.getAttribute("data-tab") === name);
 				});
 				if (you) you.classList.toggle("on", name === "player");
@@ -1121,7 +1121,7 @@
 			document.querySelectorAll(".tab.ctrl-only").forEach(function (t) {
 				t.onclick = function () { openGroup(t.getAttribute("data-group")); };
 			});
-			document.querySelectorAll(".tab.eisen-only").forEach(function (t) {
+			document.querySelectorAll(".tab.classic-only").forEach(function (t) {
 				t.onclick = function () { show(t.getAttribute("data-tab")); };
 			});
 			if (you) you.onclick = function () { show("player"); };
@@ -1151,9 +1151,9 @@
 			if (mode) mode.onclick = function (e) {
 				var b = e.target.closest("button");
 				if (!b) return;
-				var eisen = b.getAttribute("data-mode") === "eisen";
-				setMode(eisen);
-				if (eisen && current === "theme") show("world");
+				var classic = b.getAttribute("data-mode") === "classic";
+				setMode(classic);
+				if (classic && current === "theme") show("world");
 				else {
 					paintHead(current);
 					requestAnimationFrame(function () { movePill(activeRail()); });

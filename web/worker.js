@@ -29,7 +29,7 @@ async function route(request, env) {
 	if (request.method === "GET" && path === "/api/spotify") {
 		return json(200, { clientId: String(env.SPOTIFY_CLIENT_ID || "9d11fac0f4774593bc06a0edb93423e7") });
 	}
-	if (request.method === "GET" && (path === "/download" || path === "/eisenmann.jar" || path === "/voidmark.jar")) {
+	if (request.method === "GET" && (path === "/download" || path === "/stray.jar" || path === "/eisenmann.jar" || path === "/voidmark.jar")) {
 		return serveModJar(request, env);
 	}
 	if (request.method === "PUT" && path === "/api/config") {
@@ -174,7 +174,7 @@ async function handleImport(request, env) {
 	}
 	try {
 		const response = await fetch(url, {
-			headers: { "User-Agent": "Eisenmann" },
+			headers: { "User-Agent": "Stray" },
 			signal: AbortSignal.timeout(10000)
 		});
 		if (!response.ok) {
@@ -459,7 +459,7 @@ async function readCapeBytes(request, adminOk) {
 		}
 		try {
 			const response = await fetch(url, {
-				headers: { "User-Agent": "Eisenmann" },
+				headers: { "User-Agent": "Stray" },
 				signal: AbortSignal.timeout(10000)
 			});
 			if (!response.ok) {
@@ -484,7 +484,7 @@ function noteFor(state, uuid) {
 function shopConfig(state, env) {
 	const stored = objectMap(state.config);
 	return {
-		title: stored.title || env.TITLE || "EISENMANN Capes",
+		title: stored.title || env.TITLE || "STRAY Capes",
 		discord: "@evilkitten911",
 		blurb: stored.blurb || ""
 	};
@@ -523,7 +523,7 @@ function sanitizePrice(value) {
 
 function sanitizeTitle(value) {
 	const title = String(value || "").replace(/\s+/g, " ").trim().slice(0, 48);
-	return title || "EISENMANN Capes";
+	return title || "STRAY Capes";
 }
 
 function sanitizeBlurb(value) {
@@ -714,7 +714,7 @@ async function firstString(attempts) {
 async function fetchJson(url) {
 	try {
 		const response = await fetch(url, {
-			headers: { "User-Agent": "Eisenmann" },
+			headers: { "User-Agent": "Stray" },
 			signal: AbortSignal.timeout(5000)
 		});
 		if (!response.ok) {
@@ -789,7 +789,7 @@ function json(status, body, extraHeaders) {
 	});
 }
 
-const DESK_COOKIE = "voidmark_desk";
+const DESK_COOKIE = "stray_desk";
 const DESK_TTL_SEC = 60 * 60 * 24 * 7;
 
 function canonicalizePath(pathname) {
@@ -1016,7 +1016,7 @@ function modGithubDir(env, meta) {
 }
 
 function githubFileUrls(repo, branch, dir, fileName) {
-	const file = String(fileName || "eisenmann.jar").replace(/^\/+/, "");
+	const file = String(fileName || "stray.jar").replace(/^\/+/, "");
 	const path = dir + "/" + file;
 	return [
 		"https://api.github.com/repos/" + repo + "/contents/" + path + "?ref=" + encodeURIComponent(branch),
@@ -1027,7 +1027,7 @@ function githubFileUrls(repo, branch, dir, fileName) {
 }
 
 function githubFetchHeaders(url) {
-	const headers = { "User-Agent": "Eisenmann-Shop" };
+	const headers = { "User-Agent": "Stray-Shop" };
 	if (url.includes("api.github.com")) {
 		headers.Accept = "application/vnd.github.raw";
 	} else if (url.endsWith(".json") || url.includes("latest.json")) {
@@ -1090,7 +1090,7 @@ async function serveModInfo(request, env) {
 	return json(200, {
 		version: String(meta.version),
 		minecraft: String(meta.minecraft || "26.1.2"),
-		file: String(meta.file || ("eisenmann-" + meta.version + ".jar")),
+		file: String(meta.file || ("stray-" + meta.version + ".jar")),
 		url: "/download",
 		source: meta.source || "assets"
 	});
@@ -1101,6 +1101,7 @@ async function fetchModBytes(request, env, meta) {
 	if (meta && meta.file) {
 		names.push(String(meta.file));
 	}
+	names.push("stray.jar");
 	names.push("eisenmann.jar");
 	names.push("voidmark.jar");
 	for (let i = 0; i < names.length; i++) {
@@ -1137,7 +1138,7 @@ async function serveModJar(request, env) {
 	if (!got) {
 		return json(404, { error: "Mod build is not published yet" });
 	}
-	const name = String((meta && meta.file) || got.file || "eisenmann.jar").replace(/"/g, "");
+	const name = String((meta && meta.file) || got.file || "stray.jar").replace(/"/g, "");
 	const headers = new Headers();
 	headers.set("Content-Type", "application/java-archive");
 	headers.set("Content-Disposition", "attachment; filename=\"" + name + "\"");
@@ -1167,14 +1168,14 @@ function page(html) {
 	});
 }
 
-const CAPE_CROP_JS = "window.EisenmannCapeCrop = (function () {\n\tvar ASPECT = 10 / 16;\n\tvar FACE_W = 10;\n\tvar FACE_H = 16;\n\tvar LAYOUT_W = 64;\n\tvar LAYOUT_H = 32;\n\tvar MAX_SCALE = 16;\n\tvar overlay = null;\n\n\tfunction isVanilla(w, h) {\n\t\treturn w >= 64 && h >= 32 && w % 64 === 0 && h % 32 === 0 && w / 64 === h / 32;\n\t}\n\n\tfunction cover(srcW, srcH) {\n\t\tvar srcAspect = srcW / Math.max(1, srcH);\n\t\tvar crop = { x: 0, y: 0, w: 1, h: 1 };\n\t\tif (srcAspect > ASPECT) {\n\t\t\tcrop.h = 1;\n\t\t\tcrop.w = ASPECT / srcAspect;\n\t\t\tcrop.x = (1 - crop.w) * 0.5;\n\t\t\tcrop.y = 0;\n\t\t} else {\n\t\t\tcrop.w = 1;\n\t\t\tcrop.h = srcAspect / ASPECT;\n\t\t\tcrop.x = 0;\n\t\t\tcrop.y = (1 - crop.h) * 0.5;\n\t\t}\n\t\treturn crop;\n\t}\n\n\tfunction clampCrop(crop, srcW, srcH) {\n\t\tsrcW = Math.max(1, srcW);\n\t\tsrcH = Math.max(1, srcH);\n\t\tvar srcAspect = srcW / srcH;\n\t\tvar normAspect = ASPECT / srcAspect;\n\t\tvar max = cover(srcW, srcH);\n\t\tvar minW = Math.max(10 / srcW, max.w * 0.12);\n\t\tcrop.w = Math.min(max.w, Math.max(minW, crop.w));\n\t\tcrop.h = crop.w / normAspect;\n\t\tif (crop.h > max.h) {\n\t\t\tcrop.h = max.h;\n\t\t\tcrop.w = crop.h * normAspect;\n\t\t}\n\t\tcrop.x = Math.min(Math.max(0, crop.x), Math.max(0, 1 - crop.w));\n\t\tcrop.y = Math.min(Math.max(0, crop.y), Math.max(0, 1 - crop.h));\n\t}\n\n\tfunction loadImage(file) {\n\t\treturn new Promise(function (resolve, reject) {\n\t\t\tvar url = URL.createObjectURL(file);\n\t\t\tvar img = new Image();\n\t\t\timg.onload = function () {\n\t\t\t\tURL.revokeObjectURL(url);\n\t\t\t\tresolve(img);\n\t\t\t};\n\t\t\timg.onerror = function () {\n\t\t\t\tURL.revokeObjectURL(url);\n\t\t\t\treject(new Error(\"Could not read that image.\"));\n\t\t\t};\n\t\t\timg.src = url;\n\t\t});\n\t}\n\n\tfunction pickScale(sw, sh) {\n\t\tvar needed = Math.max(4, Math.min(MAX_SCALE, Math.max(Math.floor(sw / FACE_W), Math.floor(sh / FACE_H))));\n\t\treturn Math.min(MAX_SCALE, Math.max(4, needed));\n\t}\n\n\tfunction bakeAtlas(img, crop) {\n\t\tvar sw = img.width;\n\t\tvar sh = img.height;\n\t\t\tvar scale = pickScale(img.width, img.height);\n\t\tvar aw = LAYOUT_W * scale;\n\t\tvar ah = LAYOUT_H * scale;\n\t\tvar out = document.createElement(\"canvas\");\n\t\tout.width = aw;\n\t\tout.height = ah;\n\t\tvar ctx = out.getContext(\"2d\");\n\t\tctx.fillStyle = \"#000\";\n\t\tctx.fillRect(0, 0, aw, ah);\n\t\tctx.imageSmoothingEnabled = crop.w * sw > 10 * scale || crop.h * sh > 16 * scale;\n\t\tvar fu = scale;\n\t\tvar fv = scale;\n\t\tvar fw = FACE_W * scale;\n\t\tvar fh = FACE_H * scale;\n\t\tvar sx = crop.x * sw;\n\t\tvar sy = crop.y * sh;\n\t\tvar sWidth = crop.w * sw;\n\t\tvar sHeight = crop.h * sh;\n\t\tctx.drawImage(img, sx, sy, sWidth, sHeight, fu, fv, fw, fh);\n\t\tctx.drawImage(out, fu, fv, fw, fh, 12 * scale, fv, fw, fh);\n\t\tvar edge = ctx.getImageData(fu, fv, fw, fh);\n\t\tfor (var y = 0; y < fh; y++) {\n\t\t\tvar left = (y * fw) * 4;\n\t\t\tvar right = (y * fw + fw - 1) * 4;\n\t\t\tfor (var x = 0; x < scale; x++) {\n\t\t\t\tctx.fillStyle = \"rgb(\" + edge.data[left] + \",\" + edge.data[left + 1] + \",\" + edge.data[left + 2] + \")\";\n\t\t\t\tctx.fillRect(x, fv + y, 1, 1);\n\t\t\t\tctx.fillStyle = \"rgb(\" + edge.data[right] + \",\" + edge.data[right + 1] + \",\" + edge.data[right + 2] + \")\";\n\t\t\t\tctx.fillRect(11 * scale + x, fv + y, 1, 1);\n\t\t\t}\n\t\t}\n\t\tfor (var i = 0; i < fw; i++) {\n\t\t\tvar top = i * 4;\n\t\t\tvar bot = ((fh - 1) * fw + i) * 4;\n\t\t\tfor (var t = 0; t < scale; t++) {\n\t\t\t\tctx.fillStyle = \"rgb(\" + edge.data[top] + \",\" + edge.data[top + 1] + \",\" + edge.data[top + 2] + \")\";\n\t\t\t\tctx.fillRect(fu + i, t, 1, 1);\n\t\t\t\tctx.fillStyle = \"rgb(\" + edge.data[bot] + \",\" + edge.data[bot + 1] + \",\" + edge.data[bot + 2] + \")\";\n\t\t\t\tctx.fillRect(11 * scale + i, t, 1, 1);\n\t\t\t}\n\t\t}\n\t\treturn out;\n\t}\n\n\tfunction canvasPng(canvas) {\n\t\treturn new Promise(function (resolve, reject) {\n\t\t\tcanvas.toBlob(function (blob) {\n\t\t\t\tif (!blob) reject(new Error(\"Could not encode cape.\"));\n\t\t\t\telse resolve(blob);\n\t\t\t}, \"image/png\");\n\t\t});\n\t}\n\n\tfunction close() {\n\t\tif (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);\n\t\toverlay = null;\n\t}\n\n\tfunction open(file, onDone, onCancel) {\n\t\tclose();\n\t\tloadImage(file).then(function (img) {\n\t\t\tif (isVanilla(img.width, img.height)) {\n\t\t\t\tonDone(file);\n\t\t\t\treturn;\n\t\t\t}\n\t\t\tvar crop = cover(img.width, img.height);\n\t\t\toverlay = document.createElement(\"div\");\n\t\t\toverlay.className = \"overlay center\";\n\t\t\toverlay.innerHTML = \"\"\n\t\t\t\t+ '<div class=\"sheet crop-sheet\">'\n\t\t\t\t+ \"<h1 style=\\\"font-size:16px\\\">CAPE CREATOR</h1>\"\n\t\t\t\t+ '<p class=\"who\">Drag to pan. Scroll or pinch to zoom. The box is the 10\u00d716 face other players see.</p>'\n\t\t\t\t+ '<div class=\"crop-wrap\">'\n\t\t\t\t+ '<div class=\"crop-stage\" id=\"crop-stage\"><div class=\"crop-holder\"><canvas id=\"crop-src\"></canvas><div id=\"crop-box\"></div></div></div>'\n\t\t\t\t+ '<div class=\"crop-side\"><div class=\"crop-face\"><canvas id=\"crop-face\"></canvas></div><p class=\"hint\">In-game face</p></div>'\n\t\t\t\t+ \"</div>\"\n\t\t\t\t+ '<div class=\"row\">'\n\t\t\t\t+ '<button type=\"button\" class=\"ghost\" id=\"crop-reset\">Reset</button>'\n\t\t\t\t+ '<button type=\"button\" class=\"ghost\" id=\"crop-cancel\">Cancel</button>'\n\t\t\t\t+ '<button type=\"button\" class=\"primary\" id=\"crop-apply\">Apply cape</button>'\n\t\t\t\t+ \"</div></div>\";\n\t\t\tdocument.body.appendChild(overlay);\n\t\t\tvar stage = overlay.querySelector(\"#crop-stage\");\n\t\t\tvar srcCanvas = overlay.querySelector(\"#crop-src\");\n\t\t\tvar faceCanvas = overlay.querySelector(\"#crop-face\");\n\t\t\tvar box = overlay.querySelector(\"#crop-box\");\n\t\t\tvar dragging = false;\n\t\t\tvar lastX = 0;\n\t\t\tvar lastY = 0;\n\n\t\t\tfunction layout() {\n\t\t\t\tvar maxW = Math.min(420, stage.clientWidth || 420);\n\t\t\t\tvar maxH = 280;\n\t\t\t\tvar fit = Math.min(maxW / img.width, maxH / img.height);\n\t\t\t\tsrcCanvas.width = Math.max(1, Math.round(img.width * fit));\n\t\t\t\tsrcCanvas.height = Math.max(1, Math.round(img.height * fit));\n\t\t\t\tvar sctx = srcCanvas.getContext(\"2d\");\n\t\t\t\tsctx.imageSmoothingEnabled = true;\n\t\t\t\tsctx.drawImage(img, 0, 0, srcCanvas.width, srcCanvas.height);\n\t\t\t\tbox.style.left = crop.x * srcCanvas.width + \"px\";\n\t\t\t\tbox.style.top = crop.y * srcCanvas.height + \"px\";\n\t\t\t\tbox.style.width = crop.w * srcCanvas.width + \"px\";\n\t\t\t\tbox.style.height = crop.h * srcCanvas.height + \"px\";\n\t\t\t\tfaceCanvas.width = 50;\n\t\t\t\tfaceCanvas.height = 80;\n\t\t\t\tvar fctx = faceCanvas.getContext(\"2d\");\n\t\t\t\tfctx.imageSmoothingEnabled = true;\n\t\t\t\tfctx.drawImage(\n\t\t\t\t\timg,\n\t\t\t\t\tcrop.x * img.width,\n\t\t\t\t\tcrop.y * img.height,\n\t\t\t\t\tcrop.w * img.width,\n\t\t\t\t\tcrop.h * img.height,\n\t\t\t\t\t0,\n\t\t\t\t\t0,\n\t\t\t\t\t50,\n\t\t\t\t\t80\n\t\t\t\t);\n\t\t\t}\n\n\t\t\toverlay.querySelector(\"#crop-reset\").onclick = function () {\n\t\t\t\tcrop = cover(img.width, img.height);\n\t\t\t\tlayout();\n\t\t\t};\n\t\t\toverlay.querySelector(\"#crop-cancel\").onclick = function () {\n\t\t\t\tclose();\n\t\t\t\tif (onCancel) onCancel();\n\t\t\t};\n\t\t\toverlay.querySelector(\"#crop-apply\").onclick = function () {\n\t\t\t\tcanvasPng(bakeAtlas(img, crop)).then(function (blob) {\n\t\t\t\t\tclose();\n\t\t\t\t\tonDone(blob);\n\t\t\t\t}).catch(function (error) {\n\t\t\t\t\talert(error.message);\n\t\t\t\t});\n\t\t\t};\n\t\t\toverlay.addEventListener(\"click\", function (event) {\n\t\t\t\tif (event.target === overlay) {\n\t\t\t\t\tclose();\n\t\t\t\t\tif (onCancel) onCancel();\n\t\t\t\t}\n\t\t\t});\n\t\t\tstage.addEventListener(\"pointerdown\", function (event) {\n\t\t\t\tdragging = true;\n\t\t\t\tlastX = event.clientX;\n\t\t\t\tlastY = event.clientY;\n\t\t\t\tstage.setPointerCapture(event.pointerId);\n\t\t\t});\n\t\t\tstage.addEventListener(\"pointerup\", function () { dragging = false; });\n\t\t\tstage.addEventListener(\"pointermove\", function (event) {\n\t\t\t\tif (!dragging) return;\n\t\t\t\tvar dx = (event.clientX - lastX) / srcCanvas.width;\n\t\t\t\tvar dy = (event.clientY - lastY) / srcCanvas.height;\n\t\t\t\tlastX = event.clientX;\n\t\t\t\tlastY = event.clientY;\n\t\t\t\tcrop.x += dx;\n\t\t\t\tcrop.y += dy;\n\t\t\t\tclampCrop(crop, img.width, img.height);\n\t\t\t\tlayout();\n\t\t\t});\n\t\t\tstage.addEventListener(\"wheel\", function (event) {\n\t\t\t\tevent.preventDefault();\n\t\t\t\tvar rect = srcCanvas.getBoundingClientRect();\n\t\t\t\tvar px = (event.clientX - rect.left) / srcCanvas.width;\n\t\t\t\tvar py = (event.clientY - rect.top) / srcCanvas.height;\n\t\t\t\tvar factor = event.deltaY < 0 ? 0.88 : 1.14;\n\t\t\t\tcrop.x = px - (px - crop.x) * factor;\n\t\t\t\tcrop.y = py - (py - crop.y) * factor;\n\t\t\t\tcrop.w *= factor;\n\t\t\t\tcrop.h *= factor;\n\t\t\t\tclampCrop(crop, img.width, img.height);\n\t\t\t\tlayout();\n\t\t\t}, { passive: false });\n\t\t\trequestAnimationFrame(layout);\n\t\t}).catch(function (error) {\n\t\t\tif (onCancel) onCancel();\n\t\t\talert(error.message);\n\t\t});\n\t}\n\n\treturn { open: open, isVanilla: isVanilla };\n})();\n";
+const CAPE_CROP_JS = "window.StrayCapeCrop = (function () {\n\tvar ASPECT = 10 / 16;\n\tvar FACE_W = 10;\n\tvar FACE_H = 16;\n\tvar LAYOUT_W = 64;\n\tvar LAYOUT_H = 32;\n\tvar MAX_SCALE = 16;\n\tvar overlay = null;\n\n\tfunction isVanilla(w, h) {\n\t\treturn w >= 64 && h >= 32 && w % 64 === 0 && h % 32 === 0 && w / 64 === h / 32;\n\t}\n\n\tfunction cover(srcW, srcH) {\n\t\tvar srcAspect = srcW / Math.max(1, srcH);\n\t\tvar crop = { x: 0, y: 0, w: 1, h: 1 };\n\t\tif (srcAspect > ASPECT) {\n\t\t\tcrop.h = 1;\n\t\t\tcrop.w = ASPECT / srcAspect;\n\t\t\tcrop.x = (1 - crop.w) * 0.5;\n\t\t\tcrop.y = 0;\n\t\t} else {\n\t\t\tcrop.w = 1;\n\t\t\tcrop.h = srcAspect / ASPECT;\n\t\t\tcrop.x = 0;\n\t\t\tcrop.y = (1 - crop.h) * 0.5;\n\t\t}\n\t\treturn crop;\n\t}\n\n\tfunction clampCrop(crop, srcW, srcH) {\n\t\tsrcW = Math.max(1, srcW);\n\t\tsrcH = Math.max(1, srcH);\n\t\tvar srcAspect = srcW / srcH;\n\t\tvar normAspect = ASPECT / srcAspect;\n\t\tvar max = cover(srcW, srcH);\n\t\tvar minW = Math.max(10 / srcW, max.w * 0.12);\n\t\tcrop.w = Math.min(max.w, Math.max(minW, crop.w));\n\t\tcrop.h = crop.w / normAspect;\n\t\tif (crop.h > max.h) {\n\t\t\tcrop.h = max.h;\n\t\t\tcrop.w = crop.h * normAspect;\n\t\t}\n\t\tcrop.x = Math.min(Math.max(0, crop.x), Math.max(0, 1 - crop.w));\n\t\tcrop.y = Math.min(Math.max(0, crop.y), Math.max(0, 1 - crop.h));\n\t}\n\n\tfunction loadImage(file) {\n\t\treturn new Promise(function (resolve, reject) {\n\t\t\tvar url = URL.createObjectURL(file);\n\t\t\tvar img = new Image();\n\t\t\timg.onload = function () {\n\t\t\t\tURL.revokeObjectURL(url);\n\t\t\t\tresolve(img);\n\t\t\t};\n\t\t\timg.onerror = function () {\n\t\t\t\tURL.revokeObjectURL(url);\n\t\t\t\treject(new Error(\"Could not read that image.\"));\n\t\t\t};\n\t\t\timg.src = url;\n\t\t});\n\t}\n\n\tfunction pickScale(sw, sh) {\n\t\tvar needed = Math.max(4, Math.min(MAX_SCALE, Math.max(Math.floor(sw / FACE_W), Math.floor(sh / FACE_H))));\n\t\treturn Math.min(MAX_SCALE, Math.max(4, needed));\n\t}\n\n\tfunction bakeAtlas(img, crop) {\n\t\tvar sw = img.width;\n\t\tvar sh = img.height;\n\t\t\tvar scale = pickScale(img.width, img.height);\n\t\tvar aw = LAYOUT_W * scale;\n\t\tvar ah = LAYOUT_H * scale;\n\t\tvar out = document.createElement(\"canvas\");\n\t\tout.width = aw;\n\t\tout.height = ah;\n\t\tvar ctx = out.getContext(\"2d\");\n\t\tctx.fillStyle = \"#000\";\n\t\tctx.fillRect(0, 0, aw, ah);\n\t\tctx.imageSmoothingEnabled = crop.w * sw > 10 * scale || crop.h * sh > 16 * scale;\n\t\tvar fu = scale;\n\t\tvar fv = scale;\n\t\tvar fw = FACE_W * scale;\n\t\tvar fh = FACE_H * scale;\n\t\tvar sx = crop.x * sw;\n\t\tvar sy = crop.y * sh;\n\t\tvar sWidth = crop.w * sw;\n\t\tvar sHeight = crop.h * sh;\n\t\tctx.drawImage(img, sx, sy, sWidth, sHeight, fu, fv, fw, fh);\n\t\tctx.drawImage(out, fu, fv, fw, fh, 12 * scale, fv, fw, fh);\n\t\tvar edge = ctx.getImageData(fu, fv, fw, fh);\n\t\tfor (var y = 0; y < fh; y++) {\n\t\t\tvar left = (y * fw) * 4;\n\t\t\tvar right = (y * fw + fw - 1) * 4;\n\t\t\tfor (var x = 0; x < scale; x++) {\n\t\t\t\tctx.fillStyle = \"rgb(\" + edge.data[left] + \",\" + edge.data[left + 1] + \",\" + edge.data[left + 2] + \")\";\n\t\t\t\tctx.fillRect(x, fv + y, 1, 1);\n\t\t\t\tctx.fillStyle = \"rgb(\" + edge.data[right] + \",\" + edge.data[right + 1] + \",\" + edge.data[right + 2] + \")\";\n\t\t\t\tctx.fillRect(11 * scale + x, fv + y, 1, 1);\n\t\t\t}\n\t\t}\n\t\tfor (var i = 0; i < fw; i++) {\n\t\t\tvar top = i * 4;\n\t\t\tvar bot = ((fh - 1) * fw + i) * 4;\n\t\t\tfor (var t = 0; t < scale; t++) {\n\t\t\t\tctx.fillStyle = \"rgb(\" + edge.data[top] + \",\" + edge.data[top + 1] + \",\" + edge.data[top + 2] + \")\";\n\t\t\t\tctx.fillRect(fu + i, t, 1, 1);\n\t\t\t\tctx.fillStyle = \"rgb(\" + edge.data[bot] + \",\" + edge.data[bot + 1] + \",\" + edge.data[bot + 2] + \")\";\n\t\t\t\tctx.fillRect(11 * scale + i, t, 1, 1);\n\t\t\t}\n\t\t}\n\t\treturn out;\n\t}\n\n\tfunction canvasPng(canvas) {\n\t\treturn new Promise(function (resolve, reject) {\n\t\t\tcanvas.toBlob(function (blob) {\n\t\t\t\tif (!blob) reject(new Error(\"Could not encode cape.\"));\n\t\t\t\telse resolve(blob);\n\t\t\t}, \"image/png\");\n\t\t});\n\t}\n\n\tfunction close() {\n\t\tif (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);\n\t\toverlay = null;\n\t}\n\n\tfunction open(file, onDone, onCancel) {\n\t\tclose();\n\t\tloadImage(file).then(function (img) {\n\t\t\tif (isVanilla(img.width, img.height)) {\n\t\t\t\tonDone(file);\n\t\t\t\treturn;\n\t\t\t}\n\t\t\tvar crop = cover(img.width, img.height);\n\t\t\toverlay = document.createElement(\"div\");\n\t\t\toverlay.className = \"overlay center\";\n\t\t\toverlay.innerHTML = \"\"\n\t\t\t\t+ '<div class=\"sheet crop-sheet\">'\n\t\t\t\t+ \"<h1 style=\\\"font-size:16px\\\">CAPE CREATOR</h1>\"\n\t\t\t\t+ '<p class=\"who\">Drag to pan. Scroll or pinch to zoom. The box is the 10\u00d716 face other players see.</p>'\n\t\t\t\t+ '<div class=\"crop-wrap\">'\n\t\t\t\t+ '<div class=\"crop-stage\" id=\"crop-stage\"><div class=\"crop-holder\"><canvas id=\"crop-src\"></canvas><div id=\"crop-box\"></div></div></div>'\n\t\t\t\t+ '<div class=\"crop-side\"><div class=\"crop-face\"><canvas id=\"crop-face\"></canvas></div><p class=\"hint\">In-game face</p></div>'\n\t\t\t\t+ \"</div>\"\n\t\t\t\t+ '<div class=\"row\">'\n\t\t\t\t+ '<button type=\"button\" class=\"ghost\" id=\"crop-reset\">Reset</button>'\n\t\t\t\t+ '<button type=\"button\" class=\"ghost\" id=\"crop-cancel\">Cancel</button>'\n\t\t\t\t+ '<button type=\"button\" class=\"primary\" id=\"crop-apply\">Apply cape</button>'\n\t\t\t\t+ \"</div></div>\";\n\t\t\tdocument.body.appendChild(overlay);\n\t\t\tvar stage = overlay.querySelector(\"#crop-stage\");\n\t\t\tvar srcCanvas = overlay.querySelector(\"#crop-src\");\n\t\t\tvar faceCanvas = overlay.querySelector(\"#crop-face\");\n\t\t\tvar box = overlay.querySelector(\"#crop-box\");\n\t\t\tvar dragging = false;\n\t\t\tvar lastX = 0;\n\t\t\tvar lastY = 0;\n\n\t\t\tfunction layout() {\n\t\t\t\tvar maxW = Math.min(420, stage.clientWidth || 420);\n\t\t\t\tvar maxH = 280;\n\t\t\t\tvar fit = Math.min(maxW / img.width, maxH / img.height);\n\t\t\t\tsrcCanvas.width = Math.max(1, Math.round(img.width * fit));\n\t\t\t\tsrcCanvas.height = Math.max(1, Math.round(img.height * fit));\n\t\t\t\tvar sctx = srcCanvas.getContext(\"2d\");\n\t\t\t\tsctx.imageSmoothingEnabled = true;\n\t\t\t\tsctx.drawImage(img, 0, 0, srcCanvas.width, srcCanvas.height);\n\t\t\t\tbox.style.left = crop.x * srcCanvas.width + \"px\";\n\t\t\t\tbox.style.top = crop.y * srcCanvas.height + \"px\";\n\t\t\t\tbox.style.width = crop.w * srcCanvas.width + \"px\";\n\t\t\t\tbox.style.height = crop.h * srcCanvas.height + \"px\";\n\t\t\t\tfaceCanvas.width = 50;\n\t\t\t\tfaceCanvas.height = 80;\n\t\t\t\tvar fctx = faceCanvas.getContext(\"2d\");\n\t\t\t\tfctx.imageSmoothingEnabled = true;\n\t\t\t\tfctx.drawImage(\n\t\t\t\t\timg,\n\t\t\t\t\tcrop.x * img.width,\n\t\t\t\t\tcrop.y * img.height,\n\t\t\t\t\tcrop.w * img.width,\n\t\t\t\t\tcrop.h * img.height,\n\t\t\t\t\t0,\n\t\t\t\t\t0,\n\t\t\t\t\t50,\n\t\t\t\t\t80\n\t\t\t\t);\n\t\t\t}\n\n\t\t\toverlay.querySelector(\"#crop-reset\").onclick = function () {\n\t\t\t\tcrop = cover(img.width, img.height);\n\t\t\t\tlayout();\n\t\t\t};\n\t\t\toverlay.querySelector(\"#crop-cancel\").onclick = function () {\n\t\t\t\tclose();\n\t\t\t\tif (onCancel) onCancel();\n\t\t\t};\n\t\t\toverlay.querySelector(\"#crop-apply\").onclick = function () {\n\t\t\t\tcanvasPng(bakeAtlas(img, crop)).then(function (blob) {\n\t\t\t\t\tclose();\n\t\t\t\t\tonDone(blob);\n\t\t\t\t}).catch(function (error) {\n\t\t\t\t\talert(error.message);\n\t\t\t\t});\n\t\t\t};\n\t\t\toverlay.addEventListener(\"click\", function (event) {\n\t\t\t\tif (event.target === overlay) {\n\t\t\t\t\tclose();\n\t\t\t\t\tif (onCancel) onCancel();\n\t\t\t\t}\n\t\t\t});\n\t\t\tstage.addEventListener(\"pointerdown\", function (event) {\n\t\t\t\tdragging = true;\n\t\t\t\tlastX = event.clientX;\n\t\t\t\tlastY = event.clientY;\n\t\t\t\tstage.setPointerCapture(event.pointerId);\n\t\t\t});\n\t\t\tstage.addEventListener(\"pointerup\", function () { dragging = false; });\n\t\t\tstage.addEventListener(\"pointermove\", function (event) {\n\t\t\t\tif (!dragging) return;\n\t\t\t\tvar dx = (event.clientX - lastX) / srcCanvas.width;\n\t\t\t\tvar dy = (event.clientY - lastY) / srcCanvas.height;\n\t\t\t\tlastX = event.clientX;\n\t\t\t\tlastY = event.clientY;\n\t\t\t\tcrop.x += dx;\n\t\t\t\tcrop.y += dy;\n\t\t\t\tclampCrop(crop, img.width, img.height);\n\t\t\t\tlayout();\n\t\t\t});\n\t\t\tstage.addEventListener(\"wheel\", function (event) {\n\t\t\t\tevent.preventDefault();\n\t\t\t\tvar rect = srcCanvas.getBoundingClientRect();\n\t\t\t\tvar px = (event.clientX - rect.left) / srcCanvas.width;\n\t\t\t\tvar py = (event.clientY - rect.top) / srcCanvas.height;\n\t\t\t\tvar factor = event.deltaY < 0 ? 0.88 : 1.14;\n\t\t\t\tcrop.x = px - (px - crop.x) * factor;\n\t\t\t\tcrop.y = py - (py - crop.y) * factor;\n\t\t\t\tcrop.w *= factor;\n\t\t\t\tcrop.h *= factor;\n\t\t\t\tclampCrop(crop, img.width, img.height);\n\t\t\t\tlayout();\n\t\t\t}, { passive: false });\n\t\t\trequestAnimationFrame(layout);\n\t\t}).catch(function (error) {\n\t\t\tif (onCancel) onCancel();\n\t\t\talert(error.message);\n\t\t});\n\t}\n\n\treturn { open: open, isVanilla: isVanilla };\n})();\n";
 
 const STORE_HTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Eisenmann</title>
+	<title>Stray</title>
 	<meta name="description" content="A visuals oriented Hypixel Skyblock mod. Control-glass click GUI, ESP, HUD, mining, and custom capes.">
 	<meta name="theme-color" content="#05070d">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1304,21 +1305,21 @@ const STORE_HTML = `<!DOCTYPE html>
 			transition: transform 0.5s var(--ease), opacity 0.36s ease, background 0.25s ease;
 		}
 		.gui.in { opacity: 1; transform: none; }
-		body.eisen .gui {
+		body.classic .gui {
 			grid-template-columns: 168px 1fr;
 			border-radius: 12px;
 			background: var(--pane);
 			box-shadow: 0 28px 70px #0009, inset 0 0 0 1px var(--line);
 			backdrop-filter: none;
 		}
-		body.ctrl .eisen-only { display: none !important; }
-		body.eisen .ctrl-only { display: none !important; }
+		body.ctrl .classic-only { display: none !important; }
+		body.classic .ctrl-only { display: none !important; }
 		.rail {
 			position: relative; display: flex; flex-direction: column; align-items: center;
 			padding: 10px 8px 8px; gap: 0;
 		}
-		body.eisen .rail { align-items: stretch; padding: 16px 0 10px; background: #121820; }
-		body.eisen .rail::after {
+		body.classic .rail { align-items: stretch; padding: 16px 0 10px; background: #121820; }
+		body.classic .rail::after {
 			content: ""; position: absolute; top: 0; right: 0; width: 2px; height: 100%;
 			background: color-mix(in srgb, var(--accent) 38%, transparent);
 		}
@@ -1328,7 +1329,7 @@ const STORE_HTML = `<!DOCTYPE html>
 			transition: top 0.22s var(--ease), height 0.22s var(--ease), opacity 0.16s ease;
 			pointer-events: none; z-index: 0;
 		}
-		body.eisen .rail-pill {
+		body.classic .rail-pill {
 			left: 12px; width: calc(100% - 24px); height: 32px; border-radius: 8px; background: var(--pill);
 		}
 		.rail-pill.hide { opacity: 0; }
@@ -1336,12 +1337,12 @@ const STORE_HTML = `<!DOCTYPE html>
 			position: relative; z-index: 1; font-size: 9px; font-weight: 800; letter-spacing: 0.18em;
 			color: var(--header); padding: 4px 0 10px; display: none;
 		}
-		body.eisen .brand-mini { display: flex; align-items: baseline; gap: 6px; padding: 0 18px 0; font-size: 14px; letter-spacing: 0.04em; color: var(--text); }
-		body.eisen .brand-mini b { color: var(--accent); font-size: 10px; letter-spacing: 0; font-weight: 700; }
-		body.eisen .rail-tick { display: block; }
+		body.classic .brand-mini { display: flex; align-items: baseline; gap: 6px; padding: 0 18px 0; font-size: 14px; letter-spacing: 0.04em; color: var(--text); }
+		body.classic .brand-mini b { color: var(--accent); font-size: 10px; letter-spacing: 0; font-weight: 700; }
+		body.classic .rail-tick { display: block; }
 		.rail-tick { display: none; width: 32px; height: 3px; margin: 7px 18px 10px; background: var(--accent); border-radius: 2px; }
 		.grp { display: none; }
-		body.eisen .grp { display: block; padding: 8px 20px 2px; font-size: 10px; letter-spacing: 0.1em; color: var(--header); font-weight: 700; }
+		body.classic .grp { display: block; padding: 8px 20px 2px; font-size: 10px; letter-spacing: 0.1em; color: var(--header); font-weight: 700; }
 		.tab {
 			position: relative; z-index: 1; width: 72px; height: 48px; border: 0; background: transparent;
 			color: rgba(245,245,247,0.62); cursor: pointer; border-radius: 14px;
@@ -1351,15 +1352,15 @@ const STORE_HTML = `<!DOCTYPE html>
 		.tab svg { width: 16px; height: 16px; fill: currentColor; }
 		.tab.on { color: #f5f5f7; }
 		.tab:hover:not(.on) { color: #fff; }
-		body.eisen .tab {
+		body.classic .tab {
 			width: calc(100% - 24px); height: 32px; margin: 1px 12px; padding: 0 12px;
 			flex-direction: row; justify-content: flex-start; gap: 10px;
 			font: 700 15px/1 "Nunito Sans", sans-serif; color: var(--muted); border-radius: 8px;
 		}
-		body.eisen .tab svg { fill: var(--accent); }
-		body.eisen .tab.on { color: var(--text); }
-		body.eisen .tab.on svg { fill: var(--text); }
-		body.eisen .tab:hover:not(.on) { background: #ffffff14; }
+		body.classic .tab svg { fill: var(--accent); }
+		body.classic .tab.on { color: var(--text); }
+		body.classic .tab.on svg { fill: var(--text); }
+		body.classic .tab:hover:not(.on) { background: #ffffff14; }
 		.you {
 			margin-top: auto; position: relative; z-index: 1; width: auto; padding: 12px 18px 4px;
 			display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px;
@@ -1412,7 +1413,7 @@ const STORE_HTML = `<!DOCTYPE html>
 			background: rgba(0,0,0,0.18); color: var(--text); padding: 0 12px;
 			font: 600 12px/1 "Nunito Sans", sans-serif;
 		}
-		body.eisen .search { background: var(--card); width: 148px; }
+		body.classic .search { background: var(--card); width: 148px; }
 		.iconbtn {
 			width: 26px; height: 26px; border: 0; background: transparent; color: rgba(245,245,247,0.7);
 			padding: 0; cursor: pointer; display: grid; place-items: center; flex: 0 0 auto;
@@ -1421,7 +1422,7 @@ const STORE_HTML = `<!DOCTYPE html>
 		.iconbtn svg { width: 15px; height: 15px; fill: currentColor; }
 		.pane { position: relative; flex: 1; overflow: hidden; }
 		#pane-stars { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; display: none; }
-		body.eisen #pane-stars { display: block; }
+		body.classic #pane-stars { display: block; }
 		.cols {
 			position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
 			padding: 4px 12px 12px; align-content: start; align-items: start;
@@ -1436,12 +1437,12 @@ const STORE_HTML = `<!DOCTYPE html>
 			background: rgba(255,255,255,0.12); border-radius: 16px; padding: 10px 12px 8px;
 			box-shadow: inset 0 1px 0 rgba(255,255,255,0.22);
 		}
-		body.eisen .card { background: var(--card); border-radius: 12px; box-shadow: none; }
+		body.classic .card { background: var(--card); border-radius: 12px; box-shadow: none; }
 		.card h3 {
 			margin: 0 0 6px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.12);
 			font-size: 10px; letter-spacing: 0.1em; color: var(--header); font-weight: 800;
 		}
-		body.eisen .card h3 { border-bottom-color: var(--line); }
+		body.classic .card h3 { border-bottom-color: var(--line); }
 		.row { display: flex; align-items: center; justify-content: space-between; min-height: 26px; gap: 8px; }
 		.row span { font-size: 13px; font-weight: 700; }
 		.row em, .val { font-style: normal; font-size: 12px; color: var(--muted); font-weight: 700; }
@@ -1484,9 +1485,9 @@ const STORE_HTML = `<!DOCTYPE html>
 		}
 		.tog.on { background: var(--accent); }
 		.tog.on::after { left: 21px; }
-		body.eisen .tog { width: 44px; height: 22px; background: var(--track); }
-		body.eisen .tog::after { width: 16px; height: 16px; background: var(--off); box-shadow: none; }
-		body.eisen .tog.on::after { left: 25px; background: #061018; }
+		body.classic .tog { width: 44px; height: 22px; background: var(--track); }
+		body.classic .tog::after { width: 16px; height: 16px; background: var(--off); box-shadow: none; }
+		body.classic .tog.on::after { left: 25px; background: #061018; }
 		.list { display: flex; flex-direction: column; gap: 2px; }
 		.list button {
 			border: 0; background: transparent; color: rgba(245,245,247,0.7);
@@ -1587,13 +1588,13 @@ const STORE_HTML = `<!DOCTYPE html>
 	<div class="wrap">
 		<header class="top">
 			<div class="mark">
-				<div class="word">EISENMANN</div>
+				<div class="word">STRAY</div>
 				<div class="tick"></div>
 			</div>
 			<div class="top-actions">
 				<div class="mode" id="mode">
 					<button type="button" class="on" data-mode="ctrl">Control</button>
-					<button type="button" data-mode="eisen">Eisenmann</button>
+					<button type="button" data-mode="classic">Classic</button>
 				</div>
 				<a class="dl" id="mod-download" href="/download">Download</a>
 				<span class="ver" id="mod-ver"></span>
@@ -1618,8 +1619,8 @@ const STORE_HTML = `<!DOCTYPE html>
 				<div class="gui in" id="menu">
 					<aside class="rail">
 						<div class="rail-pill" id="nav-pill"></div>
-						<div class="brand-mini eisen-only">EISENMANN<b id="menu-ver"></b></div>
-						<div class="rail-tick eisen-only"></div>
+						<div class="brand-mini classic-only">STRAY<b id="menu-ver"></b></div>
+						<div class="rail-tick classic-only"></div>
 						<button type="button" class="tab ctrl-only on" data-group="world" data-tab="world"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.9 9h-3.2a15 15 0 0 0-1.4-6 8 8 0 0 1 4.6 6zM12 4c.8 1.3 1.5 3.4 1.8 6H10.2C10.5 7.4 11.2 5.3 12 4zM4.1 13h3.2c.2 2.2.7 4.2 1.4 6A8 8 0 0 1 4.1 13zM8.7 11H5.1A8 8 0 0 1 9.7 5a15 15 0 0 0-1 6zm1.5 2h3.6c-.3 2.6-1 4.7-1.8 6-.8-1.3-1.5-3.4-1.8-6zm5.1 6c.7-1.8 1.2-3.8 1.4-6h3.2a8 8 0 0 1-4.6 6z"/></svg>World</button>
 						<button type="button" class="tab ctrl-only" data-group="combat" data-tab="combat"><svg viewBox="0 0 24 24"><path d="M6.5 2 4 6l2 2-6 6 4 4 6-6 2 2 4-2.5L14 8l2-2-1-3-3 1-2-2zM16 14l6 6-2 2-6-6z"/></svg>Combat</button>
 						<button type="button" class="tab ctrl-only" data-group="visuals" data-tab="visuals"><svg viewBox="0 0 24 24"><path d="M12 5C7 5 2.7 8.1 1 12c1.7 3.9 6 7 11 7s9.3-3.1 11-7c-1.7-3.9-6-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>Visuals</button>
@@ -1628,20 +1629,20 @@ const STORE_HTML = `<!DOCTYPE html>
 						<button type="button" class="tab ctrl-only" data-group="farming" data-tab="farming"><svg viewBox="0 0 24 24"><path d="M12 2 4 7l8 5 8-5zM4 12l8 5 8-5M4 17l8 5 8-5"/></svg>Farming</button>
 						<button type="button" class="tab ctrl-only" data-group="misc" data-tab="menus"><svg viewBox="0 0 24 24"><path d="M4 5h16v3H4zm0 5.5h16v3H4zM4 16h16v3H4z"/></svg>Misc</button>
 						<button type="button" class="tab ctrl-only" data-group="theme" data-tab="theme"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.3 0-.6-.1-.9A6 6 0 0 1 12 3z"/></svg>Theme</button>
-						<button type="button" class="tab eisen-only on" data-tab="world"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/></svg>World</button>
-						<button type="button" class="tab eisen-only" data-tab="combat"><svg viewBox="0 0 24 24"><path d="M6.5 2 4 6l2 2-6 6 4 4 6-6 2 2 4-2.5L14 8l2-2z"/></svg>Combat</button>
-						<button type="button" class="tab eisen-only" data-tab="visuals"><svg viewBox="0 0 24 24"><path d="M12 5C7 5 2.7 8.1 1 12c1.7 3.9 6 7 11 7s9.3-3.1 11-7c-1.7-3.9-6-7-11-7z"/></svg>Visuals</button>
-						<div class="grp eisen-only">HUD</div>
-						<button type="button" class="tab eisen-only" data-tab="overlay"><svg viewBox="0 0 24 24"><path d="M3 5h18v10H3zM8 17h8v2H8z"/></svg>Overlay</button>
-						<button type="button" class="tab eisen-only" data-tab="bars"><svg viewBox="0 0 24 24"><path d="M4 18h3V9H4zm6.5 0h3V4h-3zM17 18h3v-7h-3z"/></svg>Bars</button>
-						<div class="grp eisen-only">MINING</div>
-						<button type="button" class="tab eisen-only" data-tab="mining"><svg viewBox="0 0 24 24"><path d="M12 2 4 7v10l8 5 8-5V7z"/></svg>Mining</button>
-						<button type="button" class="tab eisen-only" data-tab="nodes"><svg viewBox="0 0 24 24"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9z"/></svg>Nodes</button>
-						<button type="button" class="tab eisen-only" data-tab="farming"><svg viewBox="0 0 24 24"><path d="M12 2 4 7l8 5 8-5zM4 12l8 5 8-5"/></svg>Farming</button>
-						<div class="grp eisen-only">MISC</div>
-						<button type="button" class="tab eisen-only" data-tab="menus"><svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM8 3h8v3H8z"/></svg>Menus</button>
-						<button type="button" class="tab eisen-only" data-tab="status"><svg viewBox="0 0 24 24"><path d="M4 18h16v2H4zM6 10h3v7H6zm5-5h3v12h-3zm5 8h3v4h-3z"/></svg>Status</button>
-						<div class="you eisen-only" id="you" data-tab="player">
+						<button type="button" class="tab classic-only on" data-tab="world"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/></svg>World</button>
+						<button type="button" class="tab classic-only" data-tab="combat"><svg viewBox="0 0 24 24"><path d="M6.5 2 4 6l2 2-6 6 4 4 6-6 2 2 4-2.5L14 8l2-2z"/></svg>Combat</button>
+						<button type="button" class="tab classic-only" data-tab="visuals"><svg viewBox="0 0 24 24"><path d="M12 5C7 5 2.7 8.1 1 12c1.7 3.9 6 7 11 7s9.3-3.1 11-7c-1.7-3.9-6-7-11-7z"/></svg>Visuals</button>
+						<div class="grp classic-only">HUD</div>
+						<button type="button" class="tab classic-only" data-tab="overlay"><svg viewBox="0 0 24 24"><path d="M3 5h18v10H3zM8 17h8v2H8z"/></svg>Overlay</button>
+						<button type="button" class="tab classic-only" data-tab="bars"><svg viewBox="0 0 24 24"><path d="M4 18h3V9H4zm6.5 0h3V4h-3zM17 18h3v-7h-3z"/></svg>Bars</button>
+						<div class="grp classic-only">MINING</div>
+						<button type="button" class="tab classic-only" data-tab="mining"><svg viewBox="0 0 24 24"><path d="M12 2 4 7v10l8 5 8-5V7z"/></svg>Mining</button>
+						<button type="button" class="tab classic-only" data-tab="nodes"><svg viewBox="0 0 24 24"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9z"/></svg>Nodes</button>
+						<button type="button" class="tab classic-only" data-tab="farming"><svg viewBox="0 0 24 24"><path d="M12 2 4 7l8 5 8-5zM4 12l8 5 8-5"/></svg>Farming</button>
+						<div class="grp classic-only">MISC</div>
+						<button type="button" class="tab classic-only" data-tab="menus"><svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM8 3h8v3H8z"/></svg>Menus</button>
+						<button type="button" class="tab classic-only" data-tab="status"><svg viewBox="0 0 24 24"><path d="M4 18h16v2H4zM6 10h3v7H6zm5-5h3v12h-3zm5 8h3v4h-3z"/></svg>Status</button>
+						<div class="you classic-only" id="you" data-tab="player">
 							<div class="face"></div>
 							<span>You</span>
 						</div>
@@ -1654,12 +1655,12 @@ const STORE_HTML = `<!DOCTYPE html>
 							<input class="search" placeholder="Search" spellcheck="false">
 							<button type="button" class="iconbtn ctrl-only" title="Notes"><svg viewBox="0 0 24 24"><path d="M12 4a6 6 0 0 0-6 6v3.2L4 16h16l-2-2.8V10a6 6 0 0 0-6-6zm-2 16h4a2 2 0 0 1-4 0z"/></svg></button>
 							<button type="button" class="iconbtn ctrl-only" title="HUD editor"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h10v2H4zm0 5h16v2H4z"/></svg></button>
-							<button type="button" class="iconbtn eisen-only" id="theme-btn" title="Theme"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.3 0-.6-.1-.9A6 6 0 0 1 12 3z"/></svg></button>
+							<button type="button" class="iconbtn classic-only" id="theme-btn" title="Theme"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.3 0-.6-.1-.9A6 6 0 0 1 12 3z"/></svg></button>
 							<button type="button" class="head-face ctrl-only" id="head-face" title="Player"></button>
 						</div>
 						<div class="pane">
 							<canvas id="pane-stars"></canvas>
-							<div class="watermark" id="wm" hidden>EISENMANN</div>
+							<div class="watermark" id="wm" hidden>STRAY</div>
 							<div class="cols on" data-panel="world">
 								<div class="stack">
 									<div class="card">
@@ -1990,9 +1991,9 @@ const STORE_HTML = `<!DOCTYPE html>
 									</div>
 								</div>
 							</div>
-							<div class="sheet eisen-only" id="theme">
+							<div class="sheet classic-only" id="theme">
 								<h3>ACCENT</h3>
-								<div class="swatches" id="eisen-swatches"></div>
+								<div class="swatches" id="classic-swatches"></div>
 							</div>
 						</div>
 					</section>
@@ -2010,7 +2011,7 @@ const STORE_HTML = `<!DOCTYPE html>
 				<article class="feat"><svg viewBox="0 0 24 24"><path d="M3 5h18v10H3zM8 17h8v2H8z"/></svg><b>HUD</b><span>Overlay and Bars: watermark, Spotify, raw mats, and a live HUD editor.</span></article>
 				<article class="feat"><svg viewBox="0 0 24 24"><path d="M12 2 4 7v10l8 5 8-5V7z"/></svg><b>Mining</b><span>Commission HUD, titanium ESP, and End node markers on a second tab.</span></article>
 				<article class="feat"><svg viewBox="0 0 24 24"><path d="M12 2 4 7l8 5 8-5zM4 12l8 5 8-5"/></svg><b>Farming</b><span>Yaw / pitch overlay and a Jacob contest tracker on the tab list.</span></article>
-				<article class="feat"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-3 0-8 1.5-8 4.5V21h16v-2.5C20 15.5 15 14 12 14z"/></svg><b>You</b><span>Nick, custom capes, and head tags other Eisenmann users see.</span></article>
+				<article class="feat"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-3 0-8 1.5-8 4.5V21h16v-2.5C20 15.5 15 14 12 14z"/></svg><b>You</b><span>Nick, custom capes, and head tags other Stray users see.</span></article>
 				<article class="feat"><svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM8 3h8v3H8z"/></svg><b>Misc</b><span>Loadouts, wardrobe, auto experiments, keybinds, and a Status tab.</span></article>
 			</div>
 		</section>
@@ -2022,17 +2023,17 @@ const STORE_HTML = `<!DOCTYPE html>
 					<span class="handle">@evilkitten911</span>
 					<button type="button" class="copy" id="copy">Copy</button>
 				</div>
-				<p>Message that Discord with your Minecraft name. After you get added, open the Cape card in Eisenmann and crop a photo or paste a PNG. Other Eisenmann users see it when they join a world.</p>
+				<p>Message that Discord with your Minecraft name. After you get added, open the Cape card in Stray and crop a photo or paste a PNG. Other Stray users see it when they join a world.</p>
 			</div>
 			<div class="glass statline">
 				<div><b id="stat-ver">1.2</b><span>Latest build</span></div>
 				<div><b>26.1</b><span>Minecraft</span></div>
 				<div><b>Right Shift</b><span>Open menu</span></div>
-				<div><b>eisenmann.lol</b><span>Always this host</span></div>
+				<div><b>stray.gay</b><span>Always this host</span></div>
 			</div>
 		</section>
 		<div class="foot">
-			<span>eisenmann.lol</span>
+			<span>stray.gay</span>
 			<a href="/admin">Desk</a>
 		</div>
 	</div>
@@ -2132,7 +2133,7 @@ const STORE_HTML = `<!DOCTYPE html>
 			];
 			function fileUrl(data) {
 				if (data.url && data.url.charAt(0) === "/") return data.url;
-				return "https://raw.githubusercontent.com/" + (data.repo || "camberX/Eisenmann") + "/main/web/public/mod/" + (data.file || ("eisenmann-" + data.version + ".jar"));
+				return "https://raw.githubusercontent.com/" + (data.repo || "camberX/Eisenmann") + "/main/web/public/mod/" + (data.file || ("stray-" + data.version + ".jar"));
 			}
 			function apply(data) {
 				ver.textContent = "v" + data.version;
@@ -2142,7 +2143,7 @@ const STORE_HTML = `<!DOCTYPE html>
 				stat.textContent = data.version;
 				for (var i = 0; i < links.length; i++) {
 					links[i].classList.remove("dead");
-					links[i].setAttribute("download", data.file || ("eisenmann-" + data.version + ".jar"));
+					links[i].setAttribute("download", data.file || ("stray-" + data.version + ".jar"));
 					links[i].href = fileUrl(data);
 				}
 			}
@@ -2216,25 +2217,25 @@ const STORE_HTML = `<!DOCTYPE html>
 				});
 			}
 			paintSwatches(document.getElementById("swatches"));
-			paintSwatches(document.getElementById("eisen-swatches"));
+			paintSwatches(document.getElementById("classic-swatches"));
 			paintSwatches(document.getElementById("hero-swatches"));
-			function eisenMode() {
-				return document.body.classList.contains("eisen");
+			function classicMode() {
+				return document.body.classList.contains("classic");
 			}
-			function setMode(eisen) {
-				document.body.classList.toggle("eisen", eisen);
-				document.body.classList.toggle("ctrl", !eisen);
+			function setMode(classic) {
+				document.body.classList.toggle("classic", classic);
+				document.body.classList.toggle("ctrl", !classic);
 				if (mode) {
 					mode.querySelectorAll("button").forEach(function (x) {
-						x.classList.toggle("on", (x.getAttribute("data-mode") === "eisen") === eisen);
+						x.classList.toggle("on", (x.getAttribute("data-mode") === "classic") === classic);
 					});
 				}
-				if (guiLabel) guiLabel.textContent = eisen ? "Eisenmann" : "Control";
+				if (guiLabel) guiLabel.textContent = classic ? "Classic" : "Control";
 			}
 			function activeRail() {
-				if (eisenMode()) {
+				if (classicMode()) {
 					if (current === "player") return you;
-					return document.querySelector(".tab.eisen-only.on");
+					return document.querySelector(".tab.classic-only.on");
 				}
 				return document.querySelector(".tab.ctrl-only.on");
 			}
@@ -2268,7 +2269,7 @@ const STORE_HTML = `<!DOCTYPE html>
 				document.querySelectorAll(".tab.ctrl-only").forEach(function (t) {
 					t.classList.toggle("on", t.getAttribute("data-group") === group && group !== "player");
 				});
-				document.querySelectorAll(".tab.eisen-only").forEach(function (t) {
+				document.querySelectorAll(".tab.classic-only").forEach(function (t) {
 					t.classList.toggle("on", t.getAttribute("data-tab") === name);
 				});
 				if (you) you.classList.toggle("on", name === "player");
@@ -2292,7 +2293,7 @@ const STORE_HTML = `<!DOCTYPE html>
 			document.querySelectorAll(".tab.ctrl-only").forEach(function (t) {
 				t.onclick = function () { openGroup(t.getAttribute("data-group")); };
 			});
-			document.querySelectorAll(".tab.eisen-only").forEach(function (t) {
+			document.querySelectorAll(".tab.classic-only").forEach(function (t) {
 				t.onclick = function () { show(t.getAttribute("data-tab")); };
 			});
 			if (you) you.onclick = function () { show("player"); };
@@ -2322,9 +2323,9 @@ const STORE_HTML = `<!DOCTYPE html>
 			if (mode) mode.onclick = function (e) {
 				var b = e.target.closest("button");
 				if (!b) return;
-				var eisen = b.getAttribute("data-mode") === "eisen";
-				setMode(eisen);
-				if (eisen && current === "theme") show("world");
+				var classic = b.getAttribute("data-mode") === "classic";
+				setMode(classic);
+				if (classic && current === "theme") show("world");
 				else {
 					paintHead(current);
 					requestAnimationFrame(function () { movePill(activeRail()); });
@@ -2367,7 +2368,7 @@ const LOGIN_HTML = `<!DOCTYPE html>
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>EISENMANN Admin</title>
+	<title>STRAY Admin</title>
 	<meta name="theme-color" content="#05070d">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@500;700;800&display=swap" rel="stylesheet">
@@ -2428,7 +2429,7 @@ const LOGIN_HTML = `<!DOCTYPE html>
 	<div class="grain"></div>
 	<main>
 		<div class="kicker">Restricted</div>
-		<h1>EISENMANN</h1>
+		<h1>STRAY</h1>
 		<div class="tick"></div>
 		<p>Enter the Worker admin secret to open the cape desk.</p>
 		<label for="admin">Admin key</label>
@@ -2471,7 +2472,7 @@ const LOGIN_HTML = `<!DOCTYPE html>
 		const admin = document.getElementById("admin");
 		const status = document.getElementById("status");
 		const go = document.getElementById("go");
-		admin.value = sessionStorage.getItem("voidmark-admin") || "";
+		admin.value = sessionStorage.getItem("stray-admin") || "";
 		async function enter() {
 			const key = admin.value.trim();
 			status.textContent = "Checking…";
@@ -2485,10 +2486,10 @@ const LOGIN_HTML = `<!DOCTYPE html>
 				});
 				const data = await response.json();
 				if (!response.ok) throw new Error(data.error || "Bad admin key");
-				sessionStorage.setItem("voidmark-admin", key);
+				sessionStorage.setItem("stray-admin", key);
 				location.href = "/manage";
 			} catch (error) {
-				sessionStorage.removeItem("voidmark-admin");
+				sessionStorage.removeItem("stray-admin");
 				status.className = "status err";
 				status.textContent = error.message;
 			} finally {
@@ -2507,7 +2508,7 @@ const MANAGE_HTML = `<!DOCTYPE html>
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>EISENMANN Desk</title>
+	<title>STRAY Desk</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@500;700;800&display=swap" rel="stylesheet">
 	<style>
@@ -2656,7 +2657,7 @@ const MANAGE_HTML = `<!DOCTYPE html>
 	<div class="nebula"></div>
 	<div class="app" inert>
 		<aside class="rail">
-			<div class="brand">EISENMANN</div>
+			<div class="brand">STRAY</div>
 			<div class="tick"></div>
 			<div class="sub">Cape desk</div>
 			<button type="button" class="out ghost" id="out">Log out</button>
@@ -2775,7 +2776,7 @@ const MANAGE_HTML = `<!DOCTYPE html>
 	<script src="https://cdn.jsdelivr.net/npm/skinview3d@3.4.1/bundles/skinview3d.bundle.js"></script>
 	<script src="/cape-crop.js"></script>
 	<script>
-		const key = sessionStorage.getItem("voidmark-admin") || "";
+		const key = sessionStorage.getItem("stray-admin") || "";
 		if (!key) {
 			location.replace("/admin");
 		}
@@ -2962,7 +2963,7 @@ const MANAGE_HTML = `<!DOCTYPE html>
 		function kickAuth(response) {
 			if (response.status === 403) {
 				disarmDesk();
-				sessionStorage.removeItem("voidmark-admin");
+				sessionStorage.removeItem("stray-admin");
 				fetch("/api/logout", { method: "POST", credentials: "same-origin" }).finally(function () {
 					location.replace("/admin");
 				});
@@ -3453,7 +3454,7 @@ const MANAGE_HTML = `<!DOCTYPE html>
 			api("PUT", uuid.value.trim()).then(function (data) {
 				draw(data.players || []);
 				uuid.value = "";
-				setStatus(true, "Whitelisted. They can set a cape in Eisenmann.");
+				setStatus(true, "Whitelisted. They can set a cape in Stray.");
 			}).catch(function (error) { setStatus(false, error.message); });
 		};
 		uuid.addEventListener("keydown", function (event) { if (event.key === "Enter") document.getElementById("add").click(); });
@@ -3464,7 +3465,7 @@ const MANAGE_HTML = `<!DOCTYPE html>
 			const blob = new Blob([JSON.stringify(cache, null, 2)], { type: "application/json" });
 			const a = document.createElement("a");
 			a.href = URL.createObjectURL(blob);
-			a.download = "eisenmann-whitelist.json";
+			a.download = "stray-whitelist.json";
 			a.click();
 		};
 		document.getElementById("bulkadd").onclick = function () {
@@ -3477,7 +3478,7 @@ const MANAGE_HTML = `<!DOCTYPE html>
 		};
 		document.getElementById("out").onclick = function () {
 			disarmDesk();
-			sessionStorage.removeItem("voidmark-admin");
+			sessionStorage.removeItem("stray-admin");
 			fetch("/api/logout", { method: "POST", credentials: "same-origin" }).finally(function () {
 				location.replace("/admin");
 			});
@@ -3508,11 +3509,11 @@ const MANAGE_HTML = `<!DOCTYPE html>
 		document.getElementById("d-file").onchange = function () {
 			const file = document.getElementById("d-file").files[0];
 			if (!file || !selected) return;
-			if (!window.EisenmannCapeCrop) {
+			if (!window.StrayCapeCrop) {
 				uploadCapeBlob(file).catch(function (error) { setStatus(false, error.message); }).finally(function () { document.getElementById("d-file").value = ""; });
 				return;
 			}
-			EisenmannCapeCrop.open(file, function (png) {
+			StrayCapeCrop.open(file, function (png) {
 				uploadCapeBlob(png).catch(function (error) { setStatus(false, error.message); }).finally(function () { document.getElementById("d-file").value = ""; });
 			}, function () { document.getElementById("d-file").value = ""; });
 		};
@@ -3531,9 +3532,9 @@ const MANAGE_HTML = `<!DOCTYPE html>
 				}
 				return response.blob();
 			}).then(function (blob) {
-				if (!window.EisenmannCapeCrop) return uploadCapeBlob(blob);
+				if (!window.StrayCapeCrop) return uploadCapeBlob(blob);
 				return new Promise(function (resolve, reject) {
-					EisenmannCapeCrop.open(blob, function (png) { uploadCapeBlob(png).then(resolve).catch(reject); }, function () { resolve(); });
+					StrayCapeCrop.open(blob, function (png) { uploadCapeBlob(png).then(resolve).catch(reject); }, function () { resolve(); });
 				});
 			}).catch(function (error) { setStatus(false, error.message); });
 		};

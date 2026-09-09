@@ -9,8 +9,8 @@ const ROOT = fileURLToPath(new URL(".", import.meta.url));
 const PUBLIC = join(ROOT, "public");
 const DATA = join(ROOT, "data");
 const CAPES = join(DATA, "capes");
-const PORT = Number(process.env.EISENMANN_CAPE_PORT || 43150);
-const ADMIN = process.env.EISENMANN_CAPE_ADMIN || "change-me";
+const PORT = Number(process.env.STRAY_CAPE_PORT || process.env.EISENMANN_CAPE_PORT || 43150);
+const ADMIN = process.env.STRAY_CAPE_ADMIN || process.env.EISENMANN_CAPE_ADMIN || "change-me";
 const MAX_BYTES = 2 * 1024 * 1024;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 
@@ -26,7 +26,7 @@ const store = {
 	config: await loadJson(join(DATA, "config.json"), {
 		paypal: "your-paypal@email.com",
 		price: "$1",
-		title: "EISENMANN Capes",
+		title: "STRAY Capes",
 		blurb: ""
 	}),
 	notes: await loadJson(join(DATA, "notes.json"), {})
@@ -47,7 +47,7 @@ if (!store.notes || typeof store.notes !== "object" || Array.isArray(store.notes
 	store.notes = {};
 }
 if (!store.config || typeof store.config !== "object" || Array.isArray(store.config)) {
-	store.config = { paypal: "your-paypal@email.com", price: "$1", title: "EISENMANN Capes", blurb: "" };
+	store.config = { paypal: "your-paypal@email.com", price: "$1", title: "STRAY Capes", blurb: "" };
 }
 
 const MIME = {
@@ -94,12 +94,12 @@ async function route(req, res) {
 		json(res, 200, {
 			version: String(meta.version),
 			minecraft: String(meta.minecraft || "26.1.2"),
-			file: String(meta.file || ("eisenmann-" + meta.version + ".jar")),
+			file: String(meta.file || ("stray-" + meta.version + ".jar")),
 			url: "/download"
 		});
 		return;
 	}
-	if (req.method === "GET" && (path === "/download" || path === "/eisenmann.jar" || path === "/voidmark.jar")) {
+	if (req.method === "GET" && (path === "/download" || path === "/stray.jar" || path === "/eisenmann.jar" || path === "/voidmark.jar")) {
 		serveModJar(res);
 		return;
 	}
@@ -262,7 +262,7 @@ async function handleImport(req, res) {
 	}
 	try {
 		const response = await fetch(url, {
-			headers: { "User-Agent": "Eisenmann" },
+			headers: { "User-Agent": "Stray" },
 			signal: AbortSignal.timeout(10000)
 		});
 		if (!response.ok) {
@@ -550,7 +550,7 @@ async function readCapeBytes(req, adminOk) {
 		}
 		try {
 			const response = await fetch(url, {
-				headers: { "User-Agent": "Eisenmann" },
+				headers: { "User-Agent": "Stray" },
 				signal: AbortSignal.timeout(10000)
 			});
 			if (!response.ok) {
@@ -702,7 +702,7 @@ async function firstString(attempts) {
 async function fetchJson(url) {
 	try {
 		const response = await fetch(url, {
-			headers: { "User-Agent": "Eisenmann" },
+			headers: { "User-Agent": "Stray" },
 			signal: AbortSignal.timeout(5000)
 		});
 		if (!response.ok) {
@@ -729,7 +729,7 @@ function noteFor(uuid) {
 function shopConfig() {
 	const stored = store.config && typeof store.config === "object" ? store.config : {};
 	return {
-		title: stored.title || "EISENMANN Capes",
+		title: stored.title || "STRAY Capes",
 		discord: "@evilkitten911",
 		blurb: stored.blurb || ""
 	};
@@ -768,7 +768,7 @@ function sanitizePrice(value) {
 
 function sanitizeTitle(value) {
 	const title = String(value || "").replace(/\s+/g, " ").trim().slice(0, 48);
-	return title || "EISENMANN Capes";
+	return title || "STRAY Capes";
 }
 
 function sanitizeBlurb(value) {
@@ -824,15 +824,18 @@ function loadModMeta() {
 }
 
 function serveModJar(res) {
-	const current = join(PUBLIC, "mod", "eisenmann.jar");
-	const legacy = join(PUBLIC, "mod", "voidmark.jar");
-	const file = existsSync(current) ? current : legacy;
-	if (!existsSync(file)) {
+	const candidates = [
+		join(PUBLIC, "mod", "stray.jar"),
+		join(PUBLIC, "mod", "eisenmann.jar"),
+		join(PUBLIC, "mod", "voidmark.jar")
+	];
+	const file = candidates.find(existsSync);
+	if (!file) {
 		json(res, 404, { error: "Mod build is not published yet" });
 		return;
 	}
 	const meta = loadModMeta() || {};
-	const name = String(meta.file || "eisenmann.jar").replace(/"/g, "");
+	const name = String(meta.file || "stray.jar").replace(/"/g, "");
 	const size = statSync(file).size;
 	res.writeHead(200, {
 		...cors(),
@@ -904,7 +907,7 @@ function safeRequestUrl(req) {
 	return raw;
 }
 
-const DESK_COOKIE = "voidmark_desk";
+const DESK_COOKIE = "stray_desk";
 const DESK_TTL_SEC = 60 * 60 * 24 * 7;
 
 function isManagePath(path) {
@@ -1053,5 +1056,5 @@ async function saveJson(path, value) {
 }
 
 server.listen(PORT, "0.0.0.0", () => {
-	console.log(`Eisenmann cape shop http://127.0.0.1:${PORT}`);
+	console.log(`Stray cape shop http://127.0.0.1:${PORT}`);
 });

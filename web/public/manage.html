@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>EISENMANN Desk</title>
+	<title>STRAY Desk</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@500;700;800&display=swap" rel="stylesheet">
 	<style>
@@ -152,7 +152,7 @@
 	<div class="nebula"></div>
 	<div class="app" inert>
 		<aside class="rail">
-			<div class="brand">EISENMANN</div>
+			<div class="brand">STRAY</div>
 			<div class="tick"></div>
 			<div class="sub">Cape desk</div>
 			<button type="button" class="out ghost" id="out">Log out</button>
@@ -271,7 +271,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/skinview3d@3.4.1/bundles/skinview3d.bundle.js"></script>
 	<script src="/cape-crop.js"></script>
 	<script>
-		const key = sessionStorage.getItem("voidmark-admin") || "";
+		const key = sessionStorage.getItem("stray-admin") || "";
 		if (!key) {
 			location.replace("/admin");
 		}
@@ -458,7 +458,7 @@
 		function kickAuth(response) {
 			if (response.status === 403) {
 				disarmDesk();
-				sessionStorage.removeItem("voidmark-admin");
+				sessionStorage.removeItem("stray-admin");
 				fetch("/api/logout", { method: "POST", credentials: "same-origin" }).finally(function () {
 					location.replace("/admin");
 				});
@@ -949,7 +949,7 @@
 			api("PUT", uuid.value.trim()).then(function (data) {
 				draw(data.players || []);
 				uuid.value = "";
-				setStatus(true, "Whitelisted. They can set a cape in Eisenmann.");
+				setStatus(true, "Whitelisted. They can set a cape in Stray.");
 			}).catch(function (error) { setStatus(false, error.message); });
 		};
 		uuid.addEventListener("keydown", function (event) { if (event.key === "Enter") document.getElementById("add").click(); });
@@ -960,7 +960,7 @@
 			const blob = new Blob([JSON.stringify(cache, null, 2)], { type: "application/json" });
 			const a = document.createElement("a");
 			a.href = URL.createObjectURL(blob);
-			a.download = "eisenmann-whitelist.json";
+			a.download = "stray-whitelist.json";
 			a.click();
 		};
 		document.getElementById("bulkadd").onclick = function () {
@@ -973,7 +973,7 @@
 		};
 		document.getElementById("out").onclick = function () {
 			disarmDesk();
-			sessionStorage.removeItem("voidmark-admin");
+			sessionStorage.removeItem("stray-admin");
 			fetch("/api/logout", { method: "POST", credentials: "same-origin" }).finally(function () {
 				location.replace("/admin");
 			});
@@ -1004,11 +1004,11 @@
 		document.getElementById("d-file").onchange = function () {
 			const file = document.getElementById("d-file").files[0];
 			if (!file || !selected) return;
-			if (!window.EisenmannCapeCrop) {
+			if (!window.StrayCapeCrop) {
 				uploadCapeBlob(file).catch(function (error) { setStatus(false, error.message); }).finally(function () { document.getElementById("d-file").value = ""; });
 				return;
 			}
-			EisenmannCapeCrop.open(file, function (png) {
+			StrayCapeCrop.open(file, function (png) {
 				uploadCapeBlob(png).catch(function (error) { setStatus(false, error.message); }).finally(function () { document.getElementById("d-file").value = ""; });
 			}, function () { document.getElementById("d-file").value = ""; });
 		};
@@ -1027,9 +1027,9 @@
 				}
 				return response.blob();
 			}).then(function (blob) {
-				if (!window.EisenmannCapeCrop) return uploadCapeBlob(blob);
+				if (!window.StrayCapeCrop) return uploadCapeBlob(blob);
 				return new Promise(function (resolve, reject) {
-					EisenmannCapeCrop.open(blob, function (png) { uploadCapeBlob(png).then(resolve).catch(reject); }, function () { resolve(); });
+					StrayCapeCrop.open(blob, function (png) { uploadCapeBlob(png).then(resolve).catch(reject); }, function () { resolve(); });
 				});
 			}).catch(function (error) { setStatus(false, error.message); });
 		};
