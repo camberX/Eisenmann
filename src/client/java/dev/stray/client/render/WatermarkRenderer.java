@@ -15,7 +15,7 @@ import java.util.List;
 
 public final class WatermarkRenderer {
 	public static final float HEIGHT = 18;
-	private static final String DEV_TAG = "DEV";
+	private static final String DEV_TAG = "SKIJA";
 	private static final float DEV_GAP = 3f;
 
 	private WatermarkRenderer() {

@@ -1,6 +1,6 @@
 package dev.stray.client.mixin;
 
-import dev.stray.client.render.GuiFrostBlur;
+import com.github.noamm9.skijarenderer.skia.SkijaCompositor;
 import dev.stray.client.render.MobGlowRenderer;
 import dev.stray.client.visual.HeldItemShader;
 import net.minecraft.client.DeltaTracker;
@@ -62,6 +62,12 @@ public class GameRendererMixin {
 		)
 	)
 	private void stray$captureControlFrost(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
-		GuiFrostBlur.captureAfterWorld();
+		// Flush Skija chrome onto the world before vanilla GUI text and items.
+		SkijaCompositor.composite();
+	}
+
+	@Inject(method = "close", at = @At("TAIL"))
+	private void stray$closeSkija(CallbackInfo ci) {
+		SkijaCompositor.close();
 	}
 }

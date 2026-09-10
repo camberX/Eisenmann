@@ -1,5 +1,6 @@
 plugins {
 	id 'net.fabricmc.fabric-loom' version "${loom_version}"
+	id 'org.jetbrains.kotlin.jvm' version '2.3.21'
 	id 'maven-publish'
 }
 
@@ -18,6 +19,10 @@ repositories {
 			includeGroup "maven.modrinth"
 		}
 	}
+	maven {
+		name = "Skija"
+		url = "https://packages.jetbrains.team/maven/p/skija/maven"
+	}
 }
 
 loom {
@@ -31,6 +36,19 @@ loom {
 	}
 }
 
+sourceSets {
+	client {
+		kotlin.srcDir('src/client/kotlin')
+	}
+}
+
+kotlin {
+	jvmToolchain(25)
+	compilerOptions {
+		jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget('25')
+	}
+}
+
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
@@ -41,6 +59,15 @@ dependencies {
 	clientCompileOnly "org.lwjgl:lwjgl-tinyfd:3.4.1"
 	clientCompileOnly "net.java.dev.jna:jna:5.17.0"
 	clientCompileOnly "net.java.dev.jna:jna-platform:5.17.0"
+
+	implementation "net.fabricmc:fabric-language-kotlin:${project.kotlin_loader_version}"
+	include "net.fabricmc:fabric-language-kotlin:${project.kotlin_loader_version}"
+
+	def skijaVersion = "0.93.1"
+	["windows", "linux", "macos-x64", "macos-arm64"].each { os ->
+		implementation "org.jetbrains.skija:skija-${os}:${skijaVersion}"
+		include "org.jetbrains.skija:skija-${os}:${skijaVersion}"
+	}
 }
 
 processResources {
@@ -113,9 +140,7 @@ tasks.register("syncWebMod") {
 	}
 }
 
-tasks.named("build") {
-	finalizedBy "syncWebMod"
-}
+// This branch is an FPS comparison build. Do not overwrite the shop jar on main.
 
 publishing {
 	publications {

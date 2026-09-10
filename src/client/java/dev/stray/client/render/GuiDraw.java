@@ -3,16 +3,11 @@ package dev.stray.client.render;
 import dev.stray.Stray;
 import dev.stray.client.config.StrayConfig;
 import dev.stray.client.ui.ControlChrome;
-import dev.stray.client.ui.LoadoutsScreen;
 import dev.stray.client.ui.MenuFont;
 import dev.stray.client.ui.Theme;
 import dev.stray.client.visual.WorldTint;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.screens.ChatScreen;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -20,20 +15,9 @@ import net.minecraft.resources.Identifier;
 import java.util.Locale;
 
 public final class GuiDraw {
-	private static final Identifier CIRCLE = Stray.id("textures/gui/circle.png");
 	private static final Identifier CIRCLE_HOLE = Stray.id("textures/gui/circle_hole.png");
-	private static final Identifier CIRCLE_AA = Stray.id("textures/gui/circle_aa.png");
-	private static final Identifier CIRCLE_RING = Stray.id("textures/gui/circle_ring.png");
-	private static final Identifier STROKE = Stray.id("textures/gui/stroke.png");
 	private static final int CIRCLE_TEX = 64;
 	private static final int CIRCLE_HALF = 32;
-	private static final int RING_TEX = 256;
-	private static final int RING_HALF = 128;
-	/** Texels from the outer edge that cover the ring stroke and its AA. */
-	private static final int RING_BAND = 12;
-	private static final int RING_POLE = 4;
-	private static final int STROKE_TEX_W = 64;
-	private static final int STROKE_TEX_H = 16;
 
 	private GuiDraw() {
 	}
@@ -47,66 +31,17 @@ public final class GuiDraw {
 			return false;
 		}
 		graphics.enableScissor(x0, y0, x1, y1);
+		SkijaGui.pushScissor(graphics, x, y, w, h);
 		return true;
 	}
 
 	public static void disableScissor(GuiGraphicsExtractor graphics) {
 		graphics.disableScissor();
+		SkijaGui.popScissor();
 	}
 
 	public static void fill(GuiGraphicsExtractor graphics, float x, float y, float w, float h, int color) {
-		if (w <= 0 || h <= 0 || (color >>> 24) == 0) {
-			return;
-		}
-		if (menuSmooth()) {
-			graphics.pose().pushMatrix();
-			graphics.pose().translate(x, y);
-			graphics.pose().scale(w, h);
-			graphics.fill(0, 0, 1, 1, color);
-			graphics.pose().popMatrix();
-			return;
-		}
-		// Integer quads stay in one GUI batch. Pose scale on every rect is what
-		// made a full HUD set hitch; menus still use the smooth path above.
-		int x0 = (int) Math.floor(x);
-		int y0 = (int) Math.floor(y);
-		int x1 = Math.max(x0 + 1, (int) Math.ceil(x + w));
-		int y1 = Math.max(y0 + 1, (int) Math.ceil(y + h));
-		graphics.fill(x0, y0, x1, y1, color);
-	}
-
-	/**
-	 * Rounded chrome (HUD panes and menus). Pose scale so the three body rects
-	 * meet in float space — integer fills left seams, and overlapping them on
-	 * translucent HUD panes made darker bands.
-	 */
-	private static void fillSmooth(GuiGraphicsExtractor graphics, float x, float y, float w, float h, int color) {
-		if (w <= 0 || h <= 0 || (color >>> 24) == 0) {
-			return;
-		}
-		graphics.pose().pushMatrix();
-		graphics.pose().translate(x, y);
-		graphics.pose().scale(w, h);
-		graphics.fill(0, 0, 1, 1, color);
-		graphics.pose().popMatrix();
-	}
-
-	private static boolean menuSmooth() {
-		Minecraft client = Minecraft.getInstance();
-		if (client == null) {
-			return false;
-		}
-		Screen screen = client.screen;
-		if (screen == null) {
-			return false;
-		}
-		if (screen instanceof LoadoutsScreen) {
-			return true;
-		}
-		if (screen.isInGameUi() || screen instanceof ChatScreen || screen instanceof AbstractContainerScreen) {
-			return false;
-		}
-		return true;
+		SkijaGui.fill(graphics, x, y, w, h, color);
 	}
 
 	/** 18px item well: 1px outline, flat fill. Rounded panels are too expensive per slot. */
@@ -119,14 +54,7 @@ public final class GuiDraw {
 	}
 
 	public static void fillGradient(GuiGraphicsExtractor graphics, float x, float y, float w, float h, int top, int bottom) {
-		if (w <= 0 || h <= 0) {
-			return;
-		}
-		graphics.pose().pushMatrix();
-		graphics.pose().translate(x, y);
-		graphics.pose().scale(w, h);
-		graphics.fillGradient(0, 0, 1, 1, top, bottom);
-		graphics.pose().popMatrix();
+		SkijaGui.gradient(graphics, x, y, w, h, top, bottom);
 	}
 
 	/** Smooth HSV saturation/value square: 1px columns, vertical value gradient per column. */
@@ -172,80 +100,12 @@ public final class GuiDraw {
 	}
 
 	public static void circle(GuiGraphicsExtractor graphics, float cx, float cy, float radius, int color) {
-		if (radius <= 0 || (color >>> 24) < 2) {
-			return;
-		}
-		if (radius <= 1.05f) {
-			fill(graphics, cx - radius, cy - radius, radius * 2f, radius * 2f, color);
-			return;
-		}
-		float d = radius * 2f;
-		graphics.pose().pushMatrix();
-		graphics.pose().translate(cx - radius, cy - radius);
-		graphics.pose().scale(d, d);
-		graphics.blit(RenderPipelines.GUI_TEXTURED, CIRCLE, 0, 0, 0f, 0f, 1, 1, CIRCLE_TEX, CIRCLE_TEX, CIRCLE_TEX, CIRCLE_TEX, color);
-		graphics.pose().popMatrix();
+		SkijaGui.circle(graphics, cx, cy, radius, color);
 	}
 
 	/** Anti-aliased round-cap stroke, like a NanoVG line. */
 	public static void stroke(GuiGraphicsExtractor graphics, float x0, float y0, float x1, float y1, float width, int color) {
-		if (width <= 0f || (color >>> 24) < 2) {
-			return;
-		}
-		float dx = x1 - x0;
-		float dy = y1 - y0;
-		float len = (float) Math.hypot(dx, dy);
-		float half = width * 0.5f;
-		if (len < 1.0E-4f) {
-			dot(graphics, x0, y0, half, color);
-			return;
-		}
-		graphics.pose().pushMatrix();
-		graphics.pose().translate(x0, y0);
-		graphics.pose().rotate((float) Math.atan2(dy, dx));
-		graphics.pose().translate(0f, -half);
-		graphics.pose().scale(len, width);
-		graphics.blit(
-			RenderPipelines.GUI_TEXTURED,
-			STROKE,
-			0,
-			0,
-			0f,
-			0f,
-			1,
-			1,
-			STROKE_TEX_W,
-			STROKE_TEX_H,
-			STROKE_TEX_W,
-			STROKE_TEX_H,
-			color
-		);
-		graphics.pose().popMatrix();
-		dot(graphics, x0, y0, half, color);
-		dot(graphics, x1, y1, half, color);
-	}
-
-	private static void dot(GuiGraphicsExtractor graphics, float cx, float cy, float radius, int color) {
-		if (radius <= 0f || (color >>> 24) < 2) {
-			return;
-		}
-		float d = radius * 2f;
-		graphics.pose().pushMatrix();
-		graphics.pose().translate(cx - radius, cy - radius);
-		graphics.pose().scale(d, d);
-		graphics.blit(RenderPipelines.GUI_TEXTURED, CIRCLE, 0, 0, 0f, 0f, 1, 1, CIRCLE_TEX, CIRCLE_TEX, CIRCLE_TEX, CIRCLE_TEX, color);
-		graphics.pose().popMatrix();
-	}
-
-	private static void corner(GuiGraphicsExtractor graphics, float x, float y, float radius, float u, float v, int color) {
-		if (radius <= 0) {
-			return;
-		}
-		graphics.pose().pushMatrix();
-		graphics.pose().translate(x, y);
-		graphics.pose().scale(radius, radius);
-		graphics.blit(RenderPipelines.GUI_TEXTURED, CIRCLE, 0, 0, u, v, 1, 1, CIRCLE_HALF, CIRCLE_HALF, CIRCLE_TEX, CIRCLE_TEX, color);
-		graphics.pose().popMatrix();
+		SkijaGui.line(graphics, x0, y0, x1, y1, width, color);
 	}
 
 	private static void hole(GuiGraphicsExtractor graphics, float x, float y, float radius, float u, float v, int color) {
@@ -321,37 +181,12 @@ public final class GuiDraw {
 	}
 
 	public static void rounded(GuiGraphicsExtractor graphics, float x, float y, float w, float h, float radius, int color) {
-		roundedSides(graphics, x, y, w, h, radius, radius, color);
+		SkijaGui.rounded(graphics, x, y, w, h, radius, color);
 	}
 
 	/** Control chrome: 256px AA corners so large menu radii stay smooth. */
 	public static void roundedFine(GuiGraphicsExtractor graphics, float x, float y, float w, float h, float radius, int color) {
-		if (w <= 0 || h <= 0 || (color >>> 24) == 0) {
-			return;
-		}
-		float r = Math.min(Math.max(0f, radius), Math.min(w, h) / 2f);
-		if (r < 0.75f) {
-			fillSmooth(graphics, x, y, w, h, color);
-			return;
-		}
-		fillSmooth(graphics, x + r, y, w - 2f * r, h, color);
-		fillSmooth(graphics, x, y + r, r, h - 2f * r, color);
-		fillSmooth(graphics, x + w - r, y + r, r, h - 2f * r, color);
-		cornerFine(graphics, x, y, r, 0f, 0f, color);
-		cornerFine(graphics, x + w - r, y, r, RING_HALF, 0f, color);
-		cornerFine(graphics, x + w - r, y + h - r, r, RING_HALF, RING_HALF, color);
-		cornerFine(graphics, x, y + h - r, r, 0f, RING_HALF, color);
-	}
-
-	private static void cornerFine(GuiGraphicsExtractor graphics, float x, float y, float radius, float u, float v, int color) {
-		if (radius <= 0) {
-			return;
-		}
-		graphics.pose().pushMatrix();
-		graphics.pose().translate(x, y);
-		graphics.pose().scale(radius, radius);
-		graphics.blit(RenderPipelines.GUI_TEXTURED, CIRCLE_AA, 0, 0, u, v, 1, 1, RING_HALF, RING_HALF, RING_TEX, RING_TEX, color);
-		graphics.pose().popMatrix();
+		SkijaGui.rounded(graphics, x, y, w, h, radius, color);
 	}
 
 	public static void roundedSides(
@@ -364,49 +199,15 @@ public final class GuiDraw {
 		float rightRadius,
 		int color
 	) {
-		if (w <= 0 || h <= 0 || (color >>> 24) == 0) {
-			return;
-		}
-		float max = Math.min(w, h) / 2f;
-		float l = Math.min(Math.max(0f, leftRadius), max);
-		float r = Math.min(Math.max(0f, rightRadius), max);
-		if (l < 0.75f && r < 0.75f) {
-			fillSmooth(graphics, x, y, w, h, color);
-			return;
-		}
-		fillSmooth(graphics, x + l, y, w - l - r, h, color);
-		fillSmooth(graphics, x, y + l, l, h - 2f * l, color);
-		fillSmooth(graphics, x + w - r, y + r, r, h - 2f * r, color);
-		if (l >= 0.75f) {
-			corner(graphics, x, y, l, 0f, 0f, color);
-			corner(graphics, x, y + h - l, l, 0f, CIRCLE_HALF, color);
-		} else if (l > 0f) {
-			fillSmooth(graphics, x, y, l, l, color);
-			fillSmooth(graphics, x, y + h - l, l, l, color);
-		}
-		if (r >= 0.75f) {
-			corner(graphics, x + w - r, y, r, CIRCLE_HALF, 0f, color);
-			corner(graphics, x + w - r, y + h - r, r, CIRCLE_HALF, CIRCLE_HALF, color);
-		} else if (r > 0f) {
-			fillSmooth(graphics, x + w - r, y, r, r, color);
-			fillSmooth(graphics, x + w - r, y + h - r, r, r, color);
-		}
+		SkijaGui.roundedSides(graphics, x, y, w, h, leftRadius, rightRadius, color);
 	}
 
 	public static void roundLeft(GuiGraphicsExtractor graphics, float x, float y, float w, float h, float radius, int color) {
-		float r = Math.min(radius, Math.min(w, h) / 2f);
-		fillSmooth(graphics, x + r, y, w - r, h, color);
-		fillSmooth(graphics, x, y + r, r, h - 2f * r, color);
-		corner(graphics, x, y, r, 0f, 0f, color);
-		corner(graphics, x, y + h - r, r, 0f, CIRCLE_HALF, color);
+		SkijaGui.roundedSides(graphics, x, y, w, h, radius, 0f, color);
 	}
 
 	public static void roundRight(GuiGraphicsExtractor graphics, float x, float y, float w, float h, float radius, int color) {
-		float r = Math.min(radius, Math.min(w, h) / 2f);
-		fillSmooth(graphics, x, y, w - r, h, color);
-		fillSmooth(graphics, x + w - r, y + r, r, h - 2f * r, color);
-		corner(graphics, x + w - r, y, r, CIRCLE_HALF, 0f, color);
-		corner(graphics, x + w - r, y + h - r, r, CIRCLE_HALF, CIRCLE_HALF, color);
+		SkijaGui.roundedSides(graphics, x, y, w, h, 0f, radius, color);
 	}
 
 	public static void panel(GuiGraphicsExtractor graphics, float x, float y, float w, float h, float radius, int fill, int outline) {
@@ -495,67 +296,7 @@ public final class GuiDraw {
 			return;
 		}
 		float r = Math.min(Math.max(0f, radius), Math.min(w, h) / 2f);
-		int left = mixArgb(high, low, 0.28f);
-		int right = mixArgb(high, low, 0.62f);
-		float band = r < 0.75f ? Math.max(0.9f, Math.min(w, h) * 0.5f) : r * (float) RING_BAND / (float) RING_HALF;
-		if (r < 0.75f) {
-			fillSmooth(graphics, x, y, w, band, high);
-			fillSmooth(graphics, x, y + h - band, w, band, low);
-			fillSmooth(graphics, x, y, band, h, left);
-			fillSmooth(graphics, x + w - band, y, band, h, right);
-			return;
-		}
-		// Keep sides and corners from sharing coverage. Overlap was a 1px src-over
-		// hit at each tangent, which showed up as a brighter dot. A half-framebuffer
-		// pixel gap stays off the ring enough to avoid that without opening a nick.
-		float seam = 0.5f / (float) Math.max(1.0, Minecraft.getInstance().getWindow().getGuiScale());
-		float spanX = Math.max(0f, w - 2f * r - 2f * seam);
-		float spanY = Math.max(0f, h - 2f * r - 2f * seam);
-		float pole = RING_HALF - RING_POLE * 0.5f;
-		ringPiece(graphics, x + r + seam, y, spanX, band, pole, 0f, RING_POLE, RING_BAND, high);
-		ringPiece(graphics, x + r + seam, y + h - band, spanX, band, pole, RING_TEX - RING_BAND, RING_POLE, RING_BAND, low);
-		ringPiece(graphics, x, y + r + seam, band, spanY, 0f, pole, RING_BAND, RING_POLE, left);
-		ringPiece(graphics, x + w - band, y + r + seam, band, spanY, RING_TEX - RING_BAND, pole, RING_BAND, RING_POLE, right);
-		ringPiece(graphics, x, y, r, r, 0f, 0f, RING_HALF, RING_HALF, high);
-		ringPiece(graphics, x + w - r, y, r, r, RING_HALF, 0f, RING_HALF, RING_HALF, mixArgb(high, low, 0.45f));
-		ringPiece(graphics, x + w - r, y + h - r, r, r, RING_HALF, RING_HALF, RING_HALF, RING_HALF, low);
-		ringPiece(graphics, x, y + h - r, r, r, 0f, RING_HALF, RING_HALF, RING_HALF, mixArgb(high, low, 0.55f));
-	}
-
-	private static void ringPiece(
-		GuiGraphicsExtractor graphics,
-		float x,
-		float y,
-		float w,
-		float h,
-		float u,
-		float v,
-		int regionW,
-		int regionH,
-		int color
-	) {
-		if (w <= 0 || h <= 0 || (color >>> 24) < 2) {
-			return;
-		}
-		graphics.pose().pushMatrix();
-		graphics.pose().translate(x, y);
-		graphics.pose().scale(w, h);
-		graphics.blit(
-			RenderPipelines.GUI_TEXTURED,
-			CIRCLE_RING,
-			0,
-			0,
-			u,
-			v,
-			1,
-			1,
-			regionW,
-			regionH,
-			RING_TEX,
-			RING_TEX,
-			color
-		);
-		graphics.pose().popMatrix();
+		SkijaGui.hollow(graphics, x, y, w, h, r, mixArgb(high, low, 0.4f), 1f);
 	}
 
 	public static void roundedOutline(GuiGraphicsExtractor graphics, float x, float y, float w, float h, float radius, int color, float thickness) {
@@ -567,7 +308,7 @@ public final class GuiDraw {
 			border(graphics, x, y, w, h, color, Math.max(0.5f, thickness));
 			return;
 		}
-		ringOutline(graphics, x, y, w, h, r, color, color);
+		SkijaGui.hollow(graphics, x, y, w, h, r, color, Math.max(0.5f, thickness));
 	}
 
 	/**
@@ -589,14 +330,8 @@ public final class GuiDraw {
 			fill(graphics, x, y, t, h, accent);
 			return;
 		}
-		// Keep the strip narrower than the radius so the rail never runs onto the top/bottom.
 		float strip = Math.min(t, Math.max(1f, r - 0.35f));
-		float mid = h - 2f * r;
-		if (mid > 0.5f) {
-			fill(graphics, x, y + r, strip, mid, accent);
-		}
-		cornerBand(graphics, x, y, r, strip, 0f, 0f, accent);
-		cornerBand(graphics, x, y + h - r, r, strip, 0f, CIRCLE_HALF, accent);
+		SkijaGui.roundedSides(graphics, x, y, strip, h, r, 0f, accent);
 	}
 
 	/**
@@ -620,50 +355,7 @@ public final class GuiDraw {
 			return;
 		}
 		float strip = Math.min(t, Math.max(1f, r - 0.35f));
-		float mid = h - 2f * r;
-		if (mid > 0.5f) {
-			fill(graphics, x + w - strip, y + r, strip, mid, accent);
-		}
-		int regionU = Math.max(1, Math.round((strip / r) * CIRCLE_HALF));
-		float u = CIRCLE_TEX - regionU;
-		cornerBand(graphics, x + w - strip, y, r, strip, u, 0f, accent);
-		cornerBand(graphics, x + w - strip, y + h - r, r, strip, u, CIRCLE_HALF, accent);
-	}
-
-	/** Left {@code thickness} pixels of a quarter-circle so the rail follows the arc without wrapping. */
-	private static void cornerBand(
-		GuiGraphicsExtractor graphics,
-		float x,
-		float y,
-		float radius,
-		float thickness,
-		float u,
-		float v,
-		int color
-	) {
-		if (radius <= 0 || thickness <= 0) {
-			return;
-		}
-		graphics.pose().pushMatrix();
-		graphics.pose().translate(x, y);
-		graphics.pose().scale(thickness, radius);
-		int regionU = Math.max(1, Math.round((thickness / radius) * CIRCLE_HALF));
-		graphics.blit(
-			RenderPipelines.GUI_TEXTURED,
-			CIRCLE,
-			0,
-			0,
-			u,
-			v,
-			1,
-			1,
-			regionU,
-			CIRCLE_HALF,
-			CIRCLE_TEX,
-			CIRCLE_TEX,
-			color
-		);
-		graphics.pose().popMatrix();
+		SkijaGui.roundedSides(graphics, x + w - strip, y, strip, h, 0f, r, accent);
 	}
 
 	public static void text(GuiGraphicsExtractor graphics, Font font, String value, float x, float y, int color, boolean shadow) {
