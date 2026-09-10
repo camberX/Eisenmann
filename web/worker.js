@@ -1250,6 +1250,7 @@ const STORE_HTML = `<!DOCTYPE html>
 			backdrop-filter: blur(16px);
 		}
 		.ghost:hover { background: rgba(255,255,255,0.10); color: var(--text); }
+		.ghost svg { width: 14px; height: 14px; margin-right: 7px; fill: currentColor; }
 		.dl {
 			background: var(--accent); color: #061018; padding: 9px 16px; border-radius: 999px;
 			box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent), 0 10px 30px color-mix(in srgb, var(--accent) 28%, transparent);
@@ -1382,7 +1383,6 @@ const STORE_HTML = `<!DOCTYPE html>
 			font: 800 11px/1.2 "Nunito Sans", sans-serif; color: var(--accent); text-align: center;
 			letter-spacing: 0.02em; white-space: pre-line;
 		}
-		.recycle svg { display: block; width: 16px; height: 16px; margin: 0 auto; fill: currentColor; }
 		.recycle b { display: block; font-size: 9px; font-weight: 800; margin-top: 2px; }
 		.main { position: relative; display: flex; flex-direction: column; min-width: 0; }
 		.head {
@@ -1597,6 +1597,7 @@ const STORE_HTML = `<!DOCTYPE html>
 					<button type="button" class="on" data-mode="ctrl">Control</button>
 					<button type="button" data-mode="classic">Classic</button>
 				</div>
+				<a class="ghost" href="https://github.com/camberX/Stray" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
 				<a class="dl" id="mod-download" href="/download">Download</a>
 				<span class="ver" id="mod-ver"></span>
 			</div>
@@ -1605,10 +1606,11 @@ const STORE_HTML = `<!DOCTYPE html>
 		<section class="hero">
 			<div>
 				<div class="kicker">Hypixel Skyblock client</div>
-				<h1>See the<br>server in<br>your colors.</h1>
-				<p class="lede">A visuals-first click GUI: glass Control chrome, world tint, player-fill ESP, mining HUDs, and binds you set in the menu.</p>
+				<h1>Stray</h1>
+				<p class="lede">A Visuals oriented mod for Hypixel Skyblock</p>
 				<div class="cta">
 					<a class="dl" id="mod-download-2" href="/download">Get the jar</a>
+					<a class="ghost" href="https://github.com/camberX/Stray" target="_blank" rel="noopener noreferrer">GitHub</a>
 					<a class="ghost" href="#features">Browse modules</a>
 				</div>
 				<div class="swatch-row">
@@ -1647,7 +1649,7 @@ const STORE_HTML = `<!DOCTYPE html>
 							<div class="face"></div>
 							<span>You</span>
 						</div>
-						<div class="recycle ctrl-only" id="rail-ver"><svg viewBox="0 0 24 24"><path d="M8.2 10.4 6.4 3.6 11 8.2h2l4.6-4.6-1.8 6.8C16.6 15 14.6 18 12 18s-4.6-3-3.8-7.6zM9.2 18.2c.8 2 2.1 3.2 2.8 3.2s2-1.2 2.8-3.2c-.8.4-1.7.6-2.8.6s-2-.2-2.8-.6zM16.4 13.2c1.6-1.8 3.4-2.4 4-.2.3 1.2-.6 2.6-2 4-1.2 1.2-2.4 1.6-2.8 1 .2-1.2.4-2.8.8-4.8z"/></svg><b id="rail-ver-num"></b></div>
+						<div class="recycle ctrl-only" id="rail-ver">♲<b id="rail-ver-num"></b></div>
 					</aside>
 					<section class="main">
 						<div class="head">
