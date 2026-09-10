@@ -16,7 +16,7 @@ public final class ReleaseNotes {
 	public static final int VISIBLE = 10;
 	public static final Entry[] ENTRIES = {
 		new Entry("1.2.150-skija", new String[]{
-			"Experimental Skija GUI build for FPS comparison. Click GUI and HUD shapes use SkijaRenderer; text and items stay vanilla. This branch is not the shop download."
+			"Experimental Skija GUI build for FPS comparison. Click GUI and HUD shapes use SkijaRenderer; text and items stay vanilla. This branch is not the shop download. The jar now ships Skija's shared classes so it loads in-game."
 		}),
 		new Entry("1.2.150", new String[]{
 			"Player fill stars are denser and the pattern scales with distance, so player models keep visible texture up close and far away."

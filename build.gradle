@@ -49,6 +49,10 @@ kotlin {
 	}
 }
 
+configurations {
+	shade
+}
+
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
@@ -60,13 +64,17 @@ dependencies {
 	clientCompileOnly "net.java.dev.jna:jna:5.17.0"
 	clientCompileOnly "net.java.dev.jna:jna-platform:5.17.0"
 
+	// Installed separately (Prism already has it). Nesting an older copy fights that jar.
 	implementation "net.fabricmc:fabric-language-kotlin:${project.kotlin_loader_version}"
-	include "net.fabricmc:fabric-language-kotlin:${project.kotlin_loader_version}"
 
 	def skijaVersion = "0.93.1"
+	// Platform jars only have natives. Canvas and the rest of the API live in skija-shared.
+	// Shade both into this jar — Fabric JiJ dummy mods do not put those classes on Stray's loader.
+	implementation "org.jetbrains.skija:skija-shared:${skijaVersion}"
+	shade "org.jetbrains.skija:skija-shared:${skijaVersion}"
 	["windows", "linux", "macos-x64", "macos-arm64"].each { os ->
 		implementation "org.jetbrains.skija:skija-${os}:${skijaVersion}"
-		include "org.jetbrains.skija:skija-${os}:${skijaVersion}"
+		shade "org.jetbrains.skija:skija-${os}:${skijaVersion}"
 	}
 }
 
@@ -93,9 +101,17 @@ java {
 jar {
 	def projectName = project.name
 	inputs.property "projectName", projectName
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
 	from("LICENSE") {
 		rename { "${it}_${projectName}" }
+	}
+	from({
+		configurations.shade.collect { it.isDirectory() ? it : zipTree(it) }
+	}) {
+		exclude 'META-INF/MANIFEST.MF'
+		exclude 'META-INF/maven/**'
+		exclude 'module-info.class'
 	}
 }
 
