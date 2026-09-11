@@ -950,7 +950,7 @@ async function serveManage(request, env) {
 	return page(MANAGE_HTML);
 }
 
-const DEFAULT_MOD_GITHUB = "camberX/Eisenmann";
+const DEFAULT_MOD_GITHUB = "camberX/Stray";
 const LEGACY_MOD_GITHUB = "camberX/voidmark";
 const DEFAULT_MOD_BRANCH = "main";
 const DEFAULT_MOD_PATH = "web/public/mod";
@@ -1002,6 +1002,7 @@ function modGithubRepos(env) {
 		list.push(repo);
 	}
 	add(DEFAULT_MOD_GITHUB);
+	add("camberX/Eisenmann");
 	add(LEGACY_MOD_GITHUB);
 	add(env && env.MOD_GITHUB);
 	return list;
@@ -1018,12 +1019,15 @@ function modGithubDir(env, meta) {
 function githubFileUrls(repo, branch, dir, fileName) {
 	const file = String(fileName || "stray.jar").replace(/^\/+/, "");
 	const path = dir + "/" + file;
-	return [
+	const urls = [
 		"https://api.github.com/repos/" + repo + "/contents/" + path + "?ref=" + encodeURIComponent(branch),
-		"https://raw.githubusercontent.com/" + repo + "/" + branch + "/" + path,
-		"https://cdn.jsdelivr.net/gh/" + repo + "@" + branch + "/" + path,
-		"https://cdn.statically.io/gh/" + repo + "/" + branch + "/" + path
+		"https://raw.githubusercontent.com/" + repo + "/" + branch + "/" + path
 	];
+	if (!file.endsWith(".json")) {
+		urls.push("https://cdn.jsdelivr.net/gh/" + repo + "@" + branch + "/" + path);
+		urls.push("https://cdn.statically.io/gh/" + repo + "/" + branch + "/" + path);
+	}
+	return urls;
 }
 
 function githubFetchHeaders(url) {
@@ -1039,7 +1043,9 @@ function githubFetchHeaders(url) {
 async function fetchGithubFile(url) {
 	const response = await fetch(url, {
 		headers: githubFetchHeaders(url),
-		redirect: "follow"
+		redirect: "follow",
+		cache: "no-store",
+		cf: { cacheTtl: 0, cacheEverything: false }
 	});
 	return response.ok ? response : null;
 }
@@ -1056,6 +1062,7 @@ async function readGithubMeta(env) {
 	const repos = modGithubRepos(env);
 	const branch = modGithubBranch(env);
 	const dir = modGithubDir(env);
+	let best = null;
 	for (let r = 0; r < repos.length; r++) {
 		const repo = repos[r];
 		const urls = githubFileUrls(repo, branch, dir, "latest.json");
@@ -1073,13 +1080,29 @@ async function readGithubMeta(env) {
 				meta.branch = branch;
 				meta.dir = dir;
 				meta.source = "github";
-				return meta;
+				if (!best || compareModVersion(meta.version, best.version) > 0) {
+					best = meta;
+				}
 			} catch {
 				// try next mirror
 			}
 		}
 	}
-	return null;
+	return best;
+}
+
+function compareModVersion(left, right) {
+	const a = String(left || "").split(/[^0-9]+/).filter(Boolean).map(Number);
+	const b = String(right || "").split(/[^0-9]+/).filter(Boolean).map(Number);
+	const n = Math.max(a.length, b.length);
+	for (let i = 0; i < n; i++) {
+		const av = i < a.length ? a[i] : 0;
+		const bv = i < b.length ? b[i] : 0;
+		if (av !== bv) {
+			return av - bv;
+		}
+	}
+	return 0;
 }
 
 async function serveModInfo(request, env) {
