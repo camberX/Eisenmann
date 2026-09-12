@@ -1020,13 +1020,9 @@ function githubFileUrls(repo, branch, dir, fileName) {
 	const file = String(fileName || "stray.jar").replace(/^\/+/, "");
 	const path = dir + "/" + file;
 	const urls = [
-		"https://api.github.com/repos/" + repo + "/contents/" + path + "?ref=" + encodeURIComponent(branch),
-		"https://raw.githubusercontent.com/" + repo + "/" + branch + "/" + path
+		"https://raw.githubusercontent.com/" + repo + "/" + branch + "/" + path,
+		"https://api.github.com/repos/" + repo + "/contents/" + path + "?ref=" + encodeURIComponent(branch)
 	];
-	if (!file.endsWith(".json")) {
-		urls.push("https://cdn.jsdelivr.net/gh/" + repo + "@" + branch + "/" + path);
-		urls.push("https://cdn.statically.io/gh/" + repo + "/" + branch + "/" + path);
-	}
 	return urls;
 }
 
@@ -1124,9 +1120,9 @@ async function fetchModBytes(request, env, meta) {
 	if (meta && meta.file) {
 		names.push(String(meta.file));
 	}
-	names.push("stray.jar");
-	names.push("eisenmann.jar");
-	names.push("voidmark.jar");
+	// Do not fall back to stray.jar here. That file can still be the previous
+	// build for a few seconds after latest.json flips, and the launcher then
+	// rejects the download as the wrong version.
 	for (let i = 0; i < names.length; i++) {
 		const urls = githubModFileUrls(env, meta, names[i]);
 		for (let u = 0; u < urls.length; u++) {
